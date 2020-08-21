@@ -3,6 +3,7 @@ package io.github.jlprat.akka.lnl.intro.classic
 import akka.actor.Actor
 import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics._
 import akka.actor.ActorLogging
+import akka.actor.Props
 
 
 object TemperatureStatistics {
@@ -11,6 +12,8 @@ object TemperatureStatistics {
   case object GetMaxTemperature
   case object GetMinTemperature
   case object GetAverageTemperature
+
+  def props(): Props = Props(classOf[TemperatureStatistics])
 }
 
 /**
@@ -29,6 +32,7 @@ class TemperatureStatistics extends Actor with ActorLogging {
     */
   override def receive: Actor.Receive = {
     case TemperatureReading(value) => 
+      log.info(s"received temp: $value")
       events = 1
       maxTemp = Math.max(maxTemp, value)
       minTemp = Math.min(minTemp, value)
