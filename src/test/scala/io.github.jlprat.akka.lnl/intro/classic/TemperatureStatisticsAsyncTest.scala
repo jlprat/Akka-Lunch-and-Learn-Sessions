@@ -14,18 +14,22 @@ import org.scalatest.BeforeAndAfterAll
 import scala.concurrent.duration._
 
 /**
-  * 
   */
-class TemperatureStatisticsAsyncTest extends TestKit(ActorSystem()) with ImplicitSender with AnyFlatSpecLike with Matchers with BeforeAndAfterAll {
+class TemperatureStatisticsAsyncTest
+    extends TestKit(ActorSystem())
+    with ImplicitSender
+    with AnyFlatSpecLike
+    with Matchers
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     TestKit.shutdownActorSystem(system)
   }
 
   "TemperatureStatistics Async" should "fail to get any statistic before getting any reading" in {
-    
+
     val temperatureStatistics = system.actorOf(TemperatureStatistics.props())
-    
+
     temperatureStatistics ! GetMaxTemperature
     expectNoMessage(200.millis)
 
@@ -40,7 +44,7 @@ class TemperatureStatisticsAsyncTest extends TestKit(ActorSystem()) with Implici
     val temperatureStatistics = TestActorRef[TemperatureStatistics]
     temperatureStatistics ! TemperatureReading(40.1)
     temperatureStatistics ! TemperatureReading(34.9)
-    
+
     temperatureStatistics ! GetMaxTemperature
     expectMsg(40.1)
 
