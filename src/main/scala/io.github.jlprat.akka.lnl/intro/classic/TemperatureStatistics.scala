@@ -1,9 +1,10 @@
 package io.github.jlprat.akka.lnl.intro.classic
 
 import akka.actor.Actor
-import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics._
 import akka.actor.ActorLogging
 import akka.actor.Props
+
+import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics._
 
 object TemperatureStatistics {
   case class TemperatureReading(value: Double)
