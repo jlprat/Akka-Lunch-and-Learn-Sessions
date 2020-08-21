@@ -2,8 +2,8 @@ package io.github.jlprat.akka.lnl.intro.classic
 
 import akka.actor.ActorSystem
 import akka.pattern.ask
-import akka.testkit.TestActorRef
-import akka.testkit.TestKit
+import akka.testkit.{TestActorRef, TestKit}
+
 import akka.util.Timeout
 
 import scala.concurrent.duration._
@@ -11,14 +11,14 @@ import scala.concurrent.duration._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.time.Seconds
-import org.scalatest.time.Span
-import org.scalatest.time.Millis
+import org.scalatest.time.{Millis, Seconds, Span}
 
-import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics.GetAverageTemperature
-import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics.GetMaxTemperature
-import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics.GetMinTemperature
-import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics.TemperatureReading
+import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics.{
+  GetAverageTemperature,
+  GetMaxTemperature,
+  GetMinTemperature,
+  TemperatureReading
+}
 
 /**
   * Unit Test approach to actors. Tends to result on whitebox testing
