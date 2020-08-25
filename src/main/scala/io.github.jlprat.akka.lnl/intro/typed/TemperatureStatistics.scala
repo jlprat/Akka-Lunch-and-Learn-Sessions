@@ -18,7 +18,7 @@ object TemperatureStatistics {
   def apply(): Behavior[Command] =
     Behaviors.receive {
       case (context, TemperatureReading(value)) =>
-        context.log.info(s"Temperatue received $value")
+        context.log.info(s"Temperature received $value")
         withValues(value, value, value, 1)
       case _ => Behaviors.unhandled
     }
@@ -26,7 +26,7 @@ object TemperatureStatistics {
   def withValues(avg: Double, min: Double, max: Double, events: Long): Behavior[Command] =
     Behaviors.receive {
       case (context, TemperatureReading(value)) =>
-        context.log.info(s"Temperatue received $value")
+        context.log.info(s"Temperature received $value")
         withValues(
           ((avg * events) + value) / (events + 1),
           Math.min(min, value),

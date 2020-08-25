@@ -40,14 +40,14 @@ class TemperatureStatisticsTest extends AnyFlatSpec with Matchers {
 
     tempStatsBehavior.run(TemperatureReading(40.1))
     tempStatsBehavior.logEntries() shouldBe Seq(
-      CapturedLogEvent(Level.INFO, "Temperatue received 40.1", None, None)
+      CapturedLogEvent(Level.INFO, "Temperature received 40.1", None, None)
     )
 
     tempStatsBehavior.clearLog()
 
     tempStatsBehavior.run(TemperatureReading(34.9))
     tempStatsBehavior.logEntries() shouldBe Seq(
-      CapturedLogEvent(Level.INFO, "Temperatue received 34.9", None, None)
+      CapturedLogEvent(Level.INFO, "Temperature received 34.9", None, None)
     )
   }
 
