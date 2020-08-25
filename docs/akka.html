@@ -1,0 +1,298 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>Akka Intro</title>
+
+	<link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+
+	<link rel="stylesheet" href="dist/reset.css">
+	<link rel="stylesheet" href="dist/reveal.css">
+	<link rel="stylesheet" href="dist/theme/beige.css" id="theme">
+
+	<!-- Theme used for syntax highlighted code -->
+	<link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<a href="https://akka.io"><img src="images/akka-reverse-large.png" alt="Akka Logo"
+						style="background-color: #15a9ce;"></a>
+				<h2>Akka for the Impatient</h2>
+				<p>
+					<small>Josep Prat &nbsp;<a href="https://github.com/jlprat"><img src="images/GitHub-Mark-Light-32px.png"
+								alt="GitHub Logo" style="margin: 0"></a>&nbsp;- 2020/09/xx </small>
+				</p>
+			</section>
+			<section>
+				<h3>Link to the companion Repo</h3>
+				<p>
+					<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/"><img src="images/akka-lunch-learn.svg"
+							alt="QR code for the repository"></a>
+				</p>
+			</section>
+			<section>
+				<h3>Questions:</h3>
+				<ul>
+					<li>What is Akka?</li>
+					<li>What is an Actor?</li>
+					<li>When should I use Actors?</li>
+					<li>Which Actor style to choose?</li>
+					<li>How do I test Actors?</li>
+				</ul>
+			</section>
+			<section>
+				<h3>What is Akka?</h3>
+				<p>
+					Akka is a toolkit and runtime whose focus is on simplifying the creation of concurrent and distributed
+					systems.
+					<br>
+					Akka is most commonly associated with their actor library.
+				</p>
+			</section>
+			<section>
+				<h3>What is Akka?</h3>
+				<p>
+					However, Akka Platform comprises several modules and libraries:
+				<ul>
+					<li>Akka (Actors)</li>
+					<li>Akka Persistence</li>
+					<li>Akka Cluster</li>
+					<li>Akka Streams</li>
+					<li>Akka HTTP</li>
+					<li>Alpakka</li>
+					<li>and others...</li>
+				</ul>
+				</p>
+			</section>
+			<section>
+				<h3>What is Akka?</h3>
+				<p>
+					Akka's success comes primarily from bringing the Actor Model (highly inspired by the Erlang one) to the JVM.
+				</p>
+			</section>
+			<section>
+				<h3>What is an Actor?</h3>
+				<p>Actors organize themselves in parent-children hierarchies. Each parent takes care of their children during
+					their complete lifetime.</p>
+				<p>And yes:
+				<blockquote>&ldquo;One Actor is no Actor. Actors come in Systems.&rdquo;
+					<br>
+					<small>Carl Hewitt</small>
+				</blockquote>
+				</p>
+			</section>
+			<section>
+				<h3>What is an Actor?</h3>
+				<p>Actors can only communicate with each other using messages. Any attempt to access directly their internal
+					state is against the Actor Model.</p>
+				<p>Ideally such messages should be immutable.</p>
+			</section>
+			<section>
+				<h3>What is an Actor?</h3>
+				<p>
+					Overly simplifying an actor encapsulates:
+				<ul>
+					<li>State</li>
+					<li>Behavior</li>
+					<li>Mailbox</li>
+					<li>Children*</li>
+					<li>Supervision Strategy*</li>
+				</ul>
+				</p>
+				<p style="text-align: right;"><small>* Optional</small></p>
+			</section>
+			<section>
+				<h3>What is an Actor? - State</h3>
+				<p>An Actor without need to store state, most probably is no Actor.</p>
+				<p>Akka Actors, provide concurrency safety in regards of their state, meaning, one can safely modify its state
+					without worrying about concurrency issues.</p>
+			</section>
+			<section>
+				<h3>What is an Actor? - Behavior</h3>
+				<p>A behavior is how an actor handles messages. In the end is a function that takes a message and performs any
+					given actions.</p>
+				<p>Behaviors for an can be dynamically changed.</p>
+			</section>
+			<section>
+				<h3>What is an Actor? - Mailbox</h3>
+				<p>All messages sent to an Actor are first stored in their mailbox until they can be processed.</p>
+			</section>
+			<section>
+				<h3>What is an Actor? - Children</h3>
+				<p>Optionally, an Actor can create children to delegate subtasks to them. Unlike in real life, their lifetime is
+					controlled by the parent.</p>
+			</section>
+			<section>
+				<h3>What is an Actor? - Supervision Strategy</h3>
+				<p>Set of rules that define how to react in front of exceptions.</p>
+			</section>
+			<section>
+				<h3>What is an Actor? - ActorRef</h3>
+				<p>An <code>ActorRef</code> is the "address we send the messages". It encapsulates the internals of an actor and
+					it's their external representation.</p>
+			</section>
+			<section>
+				<h3>When should I use Actors?</h3>
+				<p>If you can solve your problem with a <code>Future</code>, probably you won't need Actors.</p>
+			</section>
+			<section>
+				<h3>When should I use Actors?</h3>
+				<p>Nowadays, Actors are the lowest level of abstraction on the Akka ecosystem. There might be higher
+					abstractions that would fit better to your use case.</p>
+				<p>For example Akka Streams and Akka HTTP.</p>
+			</section>
+			<section>
+				<h3>When should I use Actors?</h3>
+				<ul>
+					<li>More than one Actor</li>
+					<li>Actors have State</li>
+					<li>Actors talk to each other</li>
+				</ul>
+			</section>
+			<section>
+				<h3>Which Actor style to choose?</h3>
+			</section>
+			<section>
+				<h3 class="fragment">Classic Akka Actors</h3>
+				<pre><code class="scala" data-trim>
+					type Receive = PartialFunction[Any, Unit]
+				</code></pre>
+				<p class="fragment">The main criticism to Akka Actors has always been the lack of any types on their Actors.</p>
+			</section>
+			<section>
+				<h3>Explicit State</h3>
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|4-10|5-7|9|12-20|16-19|15,17|18">import akka.actor.{Actor, Props}
+import io.github.jlprat.akka.lnl.intro.classic.MiniExample.{Click, RetrieveClicks}
+
+object MiniExample {
+  sealed trait Command
+  case object Click extends Command
+  case object RetrieveClicks extends Command
+
+  def props(): Props = Props(classOf[MiniExample])
+}
+
+class MiniExample extends Actor {
+
+  var clicks: Long = 0
+
+  override def receive: Actor.Receive = {
+   case Click => clicks = clicks + 1
+    case RetrieveClicks => sender() ! clicks
+  }
+}					
+				</code></pre>
+			</section>
+			<section>
+				<h3>Changing Behavior</h3>
+				<pre><code class="scala" style="font-size: 18px;" data-line-numbers="|12-20|14|16-19|17|18">import akka.actor.{Actor, Props}
+import io.github.jlprat.akka.lnl.intro.classic.MiniExampleBecome.{Click, RetrieveClicks}
+
+object MiniExampleBecome {
+  sealed trait Command
+  case object Click extends Command
+  case object RetrieveClicks extends Command
+
+  def props(): Props = Props(classOf[MiniExampleBecome])
+}
+
+class MiniExampleBecome extends Actor {
+
+  override def receive: Actor.Receive = clickCounting(0)
+
+  private def clickCounting(count: Long): Actor.Receive = {
+    case Click => context.become(clickCounting(count + 1))
+    case RetrieveClicks => sender() ! count
+  }
+}
+				</code></pre>
+			</section>
+			<section>
+				<h3>Akka Typed</h3>
+				<p>Since Akka <code>2.6.x</code> versions a new type of Actors are available for production use.</p>
+			</section>
+			<section>
+				<h3>Akka Typed</h3>
+				<pre><code class="scala" style="font-size: 18px;" data-line-numbers="|4|6-8|10|12-13,18|7,14|8,15-17">import akka.actor.typed.{ActorRef, Behavior}
+import akka.actor.typed.scaladsl.Behaviors
+
+object MiniExample {
+
+  sealed trait Command
+  case object Click extends Command
+  case class RetrieveClicks(replyTo: ActorRef[Long]) extends Command
+
+  def apply(): Behavior[Command] = counting(0)
+
+  private def counting(count: Long): Behavior[Command] =
+    Behaviors.receiveMessage {
+      case Click => counting(count + 1)
+      case RetrieveClicks(replyTo) =>
+        replyTo ! count
+        Behaviors.same
+    }
+}
+				</code></pre>
+			</section>
+			<section>
+				<h3>How do I test Actors?</h3>
+				<p>On both Akka Typed and Akka Classic there are 2 different modes for testing: Synchronous and Asynchronous.
+				</p>
+				<p>Typically asynchronous testing is the preferred one, leaving synchronous testing for the pure unit tests.</p>
+			</section>
+			<section>
+				<h3>Why Asynchronous?</h3>
+				<p>It replicates a "live environment" and offers out of the box probes and mocking capabilities. It works for
+					advanced Akka features like Clustering.</p>
+			</section>
+			<section>
+				<h3>Why Synchronous?</h3>
+				<p>On Akka Typed it's independent from the <code>ActorSystem</code> and is useful to test Actors in isolation.
+				</p>
+				<p>On Akka Classic, this type of testing is not actively encouraged, but it's useful to check the side effects
+					caused by the processing of a message.</p>
+			</section>
+			<section>
+				<h3>Let's see some examples!</h3>
+			</section>
+			<section>
+				<h3>Thanks! And leave feedback!</h3>
+				<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new">Write Feedback!</a>
+				<p>
+					<small>Josep Prat &nbsp;<a href="https://github.com/jlprat"><img src="images/GitHub-Mark-Light-32px.png"
+								alt="GitHub Logo" style="margin: 0"></a>&nbsp;- 2020/09/xx </small>
+				</p>
+			</section>
+		</div>
+	</div>
+
+	<script src="dist/reveal.js"></script>
+	<script src="plugin/notes/notes.js"></script>
+	<script src="plugin/markdown/markdown.js"></script>
+	<script src="plugin/highlight/highlight.js"></script>
+	<script src="plugin/zoom/zoom.js"></script>
+	<script src="plugin/highlight/highlight.js"></script>
+
+	<script>
+		// More info about initialization & config:
+		// - https://revealjs.com/initialization/
+		// - https://revealjs.com/config/
+		Reveal.initialize({
+			hash: true,
+			controls: true,
+			progress: true,
+			showSlideNumber: 'all',
+			center: true,
+			// Learn about plugins: https://revealjs.com/plugins/
+			plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom, RevealHighlight]
+		});
+	</script>
+</body>
+
+</html>
