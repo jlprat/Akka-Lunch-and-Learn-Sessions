@@ -3,6 +3,7 @@ package io.github.jlprat.akka.lnl.intro.classic
 import akka.actor.{Actor, ActorLogging, Props}
 
 import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics._
+import io.github.jlprat.akka.lnl.intro.util.Util
 
 object TemperatureStatistics {
   case class TemperatureReading(value: Double)
@@ -23,6 +24,10 @@ class TemperatureStatistics extends Actor with ActorLogging {
   var minTemp: Double            = Double.MaxValue
   var averageTemperature: Double = 0
   var events: Long               = 0
+
+  override def preStart(): Unit = {
+    val _ = context.actorOf(TemperatureGatherer.props(Util.getTemperature))
+  }
 
   /**
     * Default receive handler. Until the first measure is not received it doesn't reply    *
