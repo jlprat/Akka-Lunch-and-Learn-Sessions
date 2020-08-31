@@ -15,6 +15,7 @@ import io.github.jlprat.akka.lnl.intro.typed.TemperatureStatistics.{
   GetMinTemperature,
   TemperatureReading
 }
+import akka.actor.testkit.typed.Effect.Spawned
 
 class TemperatureStatisticsTest extends AnyFlatSpec with Matchers {
 
@@ -63,6 +64,16 @@ class TemperatureStatisticsTest extends AnyFlatSpec with Matchers {
     tempStatsBehavior.run(GetAverageTemperature(probe.ref))
     probe.expectMessage(24.4)
 
+  }
+
+  it should "start a child on start" in {
+    val tempStatsBehavior = BehaviorTestKit(TemperatureStatistics())
+    // tempStatsBehavior.expectEffect(
+    //   Spawned(TemperatureGatherer(tempStatsBehavior.ref, Util.getTemperature), "TempGatherer")
+    // )
+    tempStatsBehavior.expectEffectPF{
+      case spawned: Spawned[_] => spawned.childName shouldBe "TempGatherer"
+    }
   }
 
 }
