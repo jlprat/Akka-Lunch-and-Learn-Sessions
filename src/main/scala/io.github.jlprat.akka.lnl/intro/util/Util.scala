@@ -5,16 +5,19 @@ import java.io.{BufferedReader, InputStreamReader}
 import scala.concurrent.{blocking, ExecutionContext, Future}
 
 object Util {
-  def getTemperature(ec: ExecutionContext): Future[Double] =
-  
+  def getTemperature(ec: ExecutionContext): Future[Double] = {
+
+    val cmds = Array("/bin/sh", "-c", "acpi -t | cut -d ',' -f2 | cut -d ' ' -f2")
+
     Future {
       blocking {
         val reader = new BufferedReader(
           new InputStreamReader(
-            Runtime.getRuntime().exec("acpi -t | cut -d ',' -f2").getInputStream()
+            Runtime.getRuntime().exec(cmds).getInputStream()
           )
         )
         reader.readLine().toDouble
       }
     }(ec)
+  }
 }
