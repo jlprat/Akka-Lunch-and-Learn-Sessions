@@ -25,7 +25,6 @@ scalacOptions ++= Seq(
   "-Xlint:inaccessible",           // Warn about inaccessible types in method signatures.
   "-Xlint:infer-any",              // Warn when a type argument is inferred to be `Any`.
   "-Xlint:missing-interpolator",   // A string literal appears to be missing an interpolator id.
-  "-Xlint:nullary-override",       // Warn when non-nullary `def f()' overrides nullary `def f'.
   "-Xlint:nullary-unit",           // Warn when nullary methods return Unit.
   "-Xlint:option-implicit",        // Option.apply used implicit view.
   "-Xlint:package-object-classes", // Class or object defined in package object.
@@ -52,5 +51,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion,
   "com.typesafe.akka" %% "akka-testkit"             % akkaVersion,
   "com.typesafe.akka" %% "akka-http-testkit"        % akkaHttpVersion,
-  "org.scalatest"     %% "scalatest"                % "3.2.1" % "test"
+  "org.scalatest"     %% "scalatest"                % "3.2.1" % "test",
+  "ch.qos.logback"     % "logback-classic"          % "1.2.3"
 )
+
+val consoleDisabledOptions = Seq("-Xfatal-warnings", "-Ywarn-unused", "-Ywarn-unused-import")
+scalacOptions in (Compile, console) ~= (_ filterNot consoleDisabledOptions.contains)
