@@ -36,13 +36,13 @@ class TemperatureStatistics extends Actor with ActorLogging {
     case TemperatureReading(value) =>
       log.info(s"received temp: $value")
       events = 1
-      maxTemp = Math.max(maxTemp, value)
-      minTemp = Math.min(minTemp, value)
+      maxTemp = value
+      minTemp = value
       averageTemperature = value
       context.become(withData)
     case _ =>
       log.info("No Data")
-      throw new IllegalStateException("No Temperature Data")
+      //throw new IllegalStateException("No Temperature Data")
   }
 
   /**
@@ -50,6 +50,7 @@ class TemperatureStatistics extends Actor with ActorLogging {
     */
   private def withData: Actor.Receive = {
     case TemperatureReading(value) =>
+      log.info(s"received temp: $value")
       averageTemperature = ((averageTemperature * events) + value) / (events + 1)
       events = events + 1
       maxTemp = Math.max(maxTemp, value)

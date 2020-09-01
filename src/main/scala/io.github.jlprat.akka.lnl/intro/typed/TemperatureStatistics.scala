@@ -16,9 +16,8 @@ object TemperatureStatistics {
   case class GetMinTemperature(replyTo: ActorRef[Double])     extends Command
   case class GetAverageTemperature(replyTo: ActorRef[Double]) extends Command
 
-def apply(): Behavior[Command] =
+  def apply(): Behavior[Command] =
     Behaviors.setup { context =>
-
       val _ = context.spawn(TemperatureGatherer(context.self, Util.getTemperature), "TempGatherer")
       Behaviors.receiveMessage {
         case TemperatureReading(value) =>
@@ -28,24 +27,24 @@ def apply(): Behavior[Command] =
       }
     }
 
-    def withValues(avg: Double, min: Double, max: Double, events: Long): Behavior[Command] =
-        Behaviors.receive {
-          case (context, TemperatureReading(value)) =>
-            context.log.info(s"Temperature received $value")
-            withValues(
-              ((avg * events) + value) / (events + 1),
-              Math.min(min, value),
-              Math.max(max, value),
-              events + 1
-            )
-          case (_, GetMaxTemperature(replyTo)) =>
-            replyTo ! max
-            Behaviors.same
-          case (_, GetMinTemperature(replyTo)) =>
-            replyTo ! min
-            Behaviors.same
-          case (_, GetAverageTemperature(replyTo)) =>
-            replyTo ! avg
-            Behaviors.same
-        }
+  def withValues(avg: Double, min: Double, max: Double, events: Long): Behavior[Command] =
+    Behaviors.receive {
+      case (context, TemperatureReading(value)) =>
+        context.log.info(s"Temperature received $value")
+        withValues(
+          ((avg * events) + value) / (events + 1),
+          Math.min(min, value),
+          Math.max(max, value),
+          events + 1
+        )
+      case (_, GetMaxTemperature(replyTo)) =>
+        replyTo ! max
+        Behaviors.same
+      case (_, GetMinTemperature(replyTo)) =>
+        replyTo ! min
+        Behaviors.same
+      case (_, GetAverageTemperature(replyTo)) =>
+        replyTo ! avg
+        Behaviors.same
+    }
 }

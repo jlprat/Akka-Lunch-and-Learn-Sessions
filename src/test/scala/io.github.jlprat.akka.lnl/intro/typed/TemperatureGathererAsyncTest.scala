@@ -24,7 +24,7 @@ class TemperatureGathererAsyncTest
 
   @nowarn
   private def fakeSysCallToCheckHotTemp(ec: ExecutionContext): Future[Double] = {
-    Future.successful(42.3)
+    Future.successful(54.3)
   }
 
   @nowarn
@@ -58,7 +58,7 @@ class TemperatureGathererAsyncTest
     val temperatureGatherer =
       BehaviorTestKit(TemperatureGatherer(fakeFather.ref, fakeSysCallToCheckHotTemp))
     temperatureGatherer.logEntries() shouldBe Seq(
-      CapturedLogEvent(Level.INFO, "It's too hot here! 42.3 °C", None, None)
+      CapturedLogEvent(Level.INFO, "It's too hot here! 54.3 °C", None, None)
     )
   }
 }

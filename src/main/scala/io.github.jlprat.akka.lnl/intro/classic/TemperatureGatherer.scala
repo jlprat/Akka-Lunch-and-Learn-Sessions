@@ -22,7 +22,7 @@ class TemperatureGatherer(val tempChecker: Function[ExecutionContext, Future[Dou
     with Timers {
 
   timers.startSingleTimer(TimerKey, CheckTemperature, 0.millis)
-  
+
   val blockingEc = context.system.dispatchers.lookup("blocking-io-dispatcher")
 
   override def receive: Actor.Receive = {
@@ -31,7 +31,7 @@ class TemperatureGatherer(val tempChecker: Function[ExecutionContext, Future[Dou
       pipe(eventualTemp)(context.dispatcher) to self
       timers.startSingleTimer(TimerKey, CheckTemperature, 100.millis)
     case temp:Double =>
-      if(temp > 42.0) log.info(s"It's too hot here! $temp °C")
+      if(temp > 50.0) log.info(s"It's too hot here! $temp °C")
       context.parent ! TemperatureStatistics.TemperatureReading(temp)
   }
 

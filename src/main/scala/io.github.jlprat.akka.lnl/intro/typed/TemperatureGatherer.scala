@@ -33,7 +33,7 @@ object TemperatureGatherer {
             timers.startSingleTimer(CheckTemperature, 100.millis)
             Behaviors.same
           case ReadTemperature(temp) =>
-            if (temp > 42.0) context.log.info(s"It's too hot here! $temp °C")
+            if (temp > 50.0) context.log.info(s"It's too hot here! $temp °C")
             parent ! TemperatureReading(temp)
             Behaviors.same
         }
