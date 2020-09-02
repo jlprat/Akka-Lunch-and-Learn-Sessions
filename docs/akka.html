@@ -80,18 +80,19 @@
 				<h3>What is an Actor?</h3>
 				<p>Actors organize themselves in parent-children hierarchies. Each parent takes care of their children during
 					their complete lifetime.</p>
-				<p>And yes:
+			</section>
+			<section>
+				<h4>And yes:</h4>
 				<blockquote>&ldquo;One Actor is no Actor. Actors come in Systems.&rdquo;
 					<br>
 					<small>Carl Hewitt</small>
 				</blockquote>
-				</p>
 			</section>
 			<section>
 				<h3>What is an Actor?</h3>
 				<p>Actors can only communicate with each other using messages. Any attempt to access directly their internal
 					state is against the Actor Model.</p>
-				<p>Ideally such messages should be immutable.</p>
+				<p>Ideally such messages should be <b>immutable</b>.</p>
 			</section>
 			<section>
 				<h3>What is an Actor?</h3>
@@ -105,23 +106,24 @@
 					<li>Supervision Strategy*</li>
 				</ul>
 				</p>
-				<p style="text-align: right;"><small>* Optional</small></p>
+				<p style="text-align: right;"><small>* <em>Optional</em></small></p>
 			</section>
 			<section>
 				<h3>What is an Actor? - State</h3>
-				<p>An Actor without need to store state, most probably is no Actor.</p>
-				<p>Akka Actors, provide concurrency safety in regards of their state, meaning, one can safely modify its state
+				<p>An Actor that doesn't keep any kind of state, most probably is not an Actor.</p>
+				<p>Akka Actors provide concurrency safety in regards of their state, meaning, it can be modified
 					without worrying about concurrency issues.</p>
 			</section>
 			<section>
 				<h3>What is an Actor? - Behavior</h3>
-				<p>A behavior is how an actor handles messages. In the end is a function that takes a message and performs any
-					given actions.</p>
-				<p>Behaviors for an can be dynamically changed.</p>
+				<p>A behavior is how an actor handles messages. In the end, it is a function that takes a message as an argument
+					and performs some given actions accordingly.</p>
+				<p>An actor's behavior can be dynamically changed.</p>
 			</section>
 			<section>
 				<h3>What is an Actor? - Mailbox</h3>
 				<p>All messages sent to an Actor are first stored in their mailbox until they can be processed.</p>
+				<p>One can tune the actor by choosing different types of Mailboxes.</p>
 			</section>
 			<section>
 				<h3>What is an Actor? - Children</h3>
@@ -130,11 +132,17 @@
 			</section>
 			<section>
 				<h3>What is an Actor? - Supervision Strategy</h3>
-				<p>Set of rules that define how to react in front of exceptions.</p>
+				<p>Set of rules that define how to react in front of exceptions:</p>
+				<ul>
+					<li>Resume</li>
+					<li>Restart</li>
+					<li>Stop</li>
+				</ul>
 			</section>
 			<section>
 				<h3>What is an Actor? - ActorRef</h3>
-				<p>An <code>ActorRef</code> is the "address we send the messages". It encapsulates the internals of an actor and
+				<p>An <code>ActorRef</code> is the <em>"address we send the messages"</em>. It encapsulates the internals of an
+					actor and
 					it's their external representation.</p>
 			</section>
 			<section>
@@ -159,7 +167,7 @@
 				<h3>Which Actor style to choose?</h3>
 			</section>
 			<section>
-				<h3 class="fragment">Classic Akka Actors</h3>
+				<h3>Classic Akka Actors</h3>
 				<pre><code class="scala" data-trim>
 					type Receive = PartialFunction[Any, Unit]
 				</code></pre>
@@ -167,7 +175,7 @@
 			</section>
 			<section>
 				<h3>Explicit State</h3>
-				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|4-10|5-7|9|12-20|16-19|15,17|18">import akka.actor.{Actor, Props}
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|4-10|5-7|9|12-20|16-19|6,14,17|7,14,18">import akka.actor.{Actor, Props}
 import io.github.jlprat.akka.lnl.intro.classic.MiniExample.{Click, RetrieveClicks}
 
 object MiniExample {
@@ -191,7 +199,7 @@ class MiniExample extends Actor {
 			</section>
 			<section>
 				<h3>Changing Behavior</h3>
-				<pre><code class="scala" style="font-size: 18px;" data-line-numbers="|12-20|14|16-19|17|18">import akka.actor.{Actor, Props}
+				<pre><code class="scala" style="font-size: 18px;" data-line-numbers="|12-20|14|16-19|6,17|7,18">import akka.actor.{Actor, Props}
 import io.github.jlprat.akka.lnl.intro.classic.MiniExampleBecome.{Click, RetrieveClicks}
 
 object MiniExampleBecome {
@@ -215,7 +223,7 @@ class MiniExampleBecome extends Actor {
 			</section>
 			<section>
 				<h3>Akka Typed</h3>
-				<p>Since Akka <code>2.6.x</code> versions a new type of Actors are available for production use.</p>
+				<p>Since Akka <code>2.6.x</code> a new type of Actors is available and production ready.</p>
 			</section>
 			<section>
 				<h3>Akka Typed</h3>
@@ -242,20 +250,25 @@ object MiniExample {
 			</section>
 			<section>
 				<h3>How do I test Actors?</h3>
-				<p>On both Akka Typed and Akka Classic there are 2 different modes for testing: Synchronous and Asynchronous.
+				<p>There are two different modes for testing: <b>Synchronous</b> and <b>Asynchronous</b>.
 				</p>
 				<p>Typically asynchronous testing is the preferred one, leaving synchronous testing for the pure unit tests.</p>
 			</section>
 			<section>
 				<h3>Why Asynchronous?</h3>
 				<p>It replicates a "live environment" and offers out of the box probes and mocking capabilities. It works for
-					advanced Akka features like Clustering.</p>
+					advanced Akka features like Timers and Clustering.</p>
 			</section>
 			<section>
 				<h3>Why Synchronous?</h3>
-				<p>On Akka Typed it's independent from the <code>ActorSystem</code> and is useful to test Actors in isolation.
+				<p>On <code>Akka Typed</code> it's independent from the <code>ActorSystem</code> and is useful to test Actors in
+					isolation.
 				</p>
-				<p>On Akka Classic, this type of testing is not actively encouraged, but it's useful to check the side effects
+			</section>
+			<section>
+				<h3>Why Synchronous?</h3>
+				<p>On <code>Akka Classic</code>, this type of testing is not actively encouraged, but it's still useful to check
+					the side effects
 					caused by the processing of a message.</p>
 			</section>
 			<section>
@@ -263,7 +276,8 @@ object MiniExample {
 			</section>
 			<section>
 				<h3>Thanks! And leave feedback!</h3>
-				<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener" target="_blank">Write Feedback!</a>
+				<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
+					target="_blank">Write Feedback!</a>
 				<p>
 					<small>Josep Prat &nbsp;<a href="https://github.com/jlprat"><img src="images/GitHub-Mark-32px.png"
 								alt="GitHub Logo" style="margin: 0"></a>&nbsp;- 2020/09/xx </small>
