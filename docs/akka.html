@@ -191,7 +191,7 @@ class MiniExample extends Actor {
   var clicks: Long = 0
 
   override def receive: Actor.Receive = {
-   case Click => clicks = clicks + 1
+    case Click => clicks = clicks + 1
     case RetrieveClicks => sender() ! clicks
   }
 }					
