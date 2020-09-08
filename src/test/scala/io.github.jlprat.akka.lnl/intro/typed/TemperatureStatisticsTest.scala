@@ -20,7 +20,10 @@ import akka.actor.testkit.typed.Effect.Spawned
 class TemperatureStatisticsTest extends AnyFlatSpec with Matchers {
 
   "TemperatureStatistics" should "fail to get any statistic before getting any reading" in {
-    val tempStatsBehavior = BehaviorTestKit(TemperatureStatistics(true))
+    val tempStatsBehavior =
+      BehaviorTestKit(
+        TemperatureStatistics(true)
+      ) // we don't want TemperatureGatherer starting to gather temp and sending it over to the parent
 
     val probe = TestInbox[Double]()
     tempStatsBehavior.run(GetMaxTemperature(probe.ref))
@@ -37,7 +40,10 @@ class TemperatureStatisticsTest extends AnyFlatSpec with Matchers {
   }
 
   it should "read temperatures and calculate the right average" in {
-    val tempStatsBehavior = BehaviorTestKit(TemperatureStatistics(true))
+    val tempStatsBehavior =
+      BehaviorTestKit(
+        TemperatureStatistics(true)
+      ) // we don't want TemperatureGatherer starting to gather temp and sending it over to the parent
 
     tempStatsBehavior.run(TemperatureReading(40.1))
     tempStatsBehavior.logEntries() shouldBe Seq(
@@ -67,11 +73,14 @@ class TemperatureStatisticsTest extends AnyFlatSpec with Matchers {
   }
 
   it should "start a child on start" in {
-    val tempStatsBehavior = BehaviorTestKit(TemperatureStatistics(true))
+    val tempStatsBehavior =
+      BehaviorTestKit(
+        TemperatureStatistics(true)
+      ) // we don't want TemperatureGatherer starting to gather temp and sending it over to the parent
     // tempStatsBehavior.expectEffect(
     //   Spawned(TemperatureGatherer(tempStatsBehavior.ref, Util.getTemperature), "TempGatherer")
     // )
-    tempStatsBehavior.expectEffectPF{
+    tempStatsBehavior.expectEffectPF {
       case spawned: Spawned[_] => spawned.childName shouldBe "TempGatherer"
     }
   }

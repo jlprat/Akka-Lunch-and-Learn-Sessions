@@ -38,8 +38,11 @@ class TemperatureStatisticsTest
 
   "TemperatureStatistics" should "fail to get any statistic before getting any reading" in {
 
-    val temperatureStatistics = TestActorRef[TemperatureStatistics](TemperatureStatistics.propsSyncTesting())
-    val futureMaxTemp         = temperatureStatistics ? GetMaxTemperature
+    val temperatureStatistics =
+      TestActorRef[TemperatureStatistics](
+        TemperatureStatistics.propsSyncTesting()
+      ) // we don't want TemperatureGatherer starting to gather temp and sending it over to the parent
+    val futureMaxTemp = temperatureStatistics ? GetMaxTemperature
     futureMaxTemp.failed.futureValue.isInstanceOf[IllegalStateException]
 
     val futureMinTemp = temperatureStatistics ? GetMinTemperature
@@ -51,7 +54,10 @@ class TemperatureStatisticsTest
   }
 
   it should "read temperatures" in {
-    val temperatureStatistics = TestActorRef[TemperatureStatistics](TemperatureStatistics.propsSyncTesting())
+    val temperatureStatistics =
+      TestActorRef[TemperatureStatistics](
+        TemperatureStatistics.propsSyncTesting()
+      ) // we don't want TemperatureGatherer starting to gather temp and sending it over to the parent
     temperatureStatistics ! TemperatureReading(40.1)
 
     temperatureStatistics.underlyingActor.events shouldBe 1
@@ -69,7 +75,9 @@ class TemperatureStatisticsTest
   }
 
   it should "return statistics after reading temperatures" in {
-    val temperatureStatistics = TestActorRef[TemperatureStatistics](TemperatureStatistics.propsSyncTesting())
+    val temperatureStatistics = TestActorRef[TemperatureStatistics](
+      TemperatureStatistics.propsSyncTesting()
+    ) // we don't want TemperatureGatherer starting to gather temp and sending it over to the parent
     temperatureStatistics ! TemperatureReading(40.1)
     temperatureStatistics ! TemperatureReading(34.9)
 

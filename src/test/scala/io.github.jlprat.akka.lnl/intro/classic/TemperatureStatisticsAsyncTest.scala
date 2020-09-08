@@ -31,7 +31,10 @@ class TemperatureStatisticsAsyncTest
 
   "TemperatureStatistics Async" should "fail to get any statistic before getting any reading" in {
 
-    val temperatureStatistics = system.actorOf(TemperatureStatistics.propsSyncTesting())
+    val temperatureStatistics =
+      system.actorOf(
+        TemperatureStatistics.propsSyncTesting()
+      ) // we don't want TemperatureGatherer starting to gather temp and sending it over to the parent
 
     temperatureStatistics ! GetMaxTemperature
     expectNoMessage(100.millis)
@@ -44,7 +47,10 @@ class TemperatureStatisticsAsyncTest
   }
 
   it should "return statistics after reading temperatures" in {
-    val temperatureStatistics = system.actorOf(TemperatureStatistics.propsSyncTesting())
+    val temperatureStatistics =
+      system.actorOf(
+        TemperatureStatistics.propsSyncTesting()
+      ) // we don't want TemperatureGatherer starting to gather temp and sending it over to the parent
     temperatureStatistics ! TemperatureReading(40.1)
     temperatureStatistics ! TemperatureReading(34.9)
 

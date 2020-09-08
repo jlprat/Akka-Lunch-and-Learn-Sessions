@@ -17,7 +17,7 @@ object TemperatureGatherer {
   def apply(
       parent: ActorRef[TemperatureStatistics.Command],
       obtainTemp: ExecutionContext => Future[Double],
-      testMode: Boolean = false
+      testMode: Boolean = false // this flag is only for testing purposes and avoids starting the timers
   ): Behavior[Command] =
     Behaviors.setup { context =>
       implicit val ec: ExecutionContext =

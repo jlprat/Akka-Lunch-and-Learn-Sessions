@@ -21,7 +21,7 @@ object TemperatureGatherer {
 
 class TemperatureGatherer(
     val tempChecker: Function[ExecutionContext, Future[Double]],
-    val testMode: Boolean
+    val testMode: Boolean // this flag is only for testing purposes and avoids starting the timers
 ) extends Actor
     with ActorLogging
     with Timers {

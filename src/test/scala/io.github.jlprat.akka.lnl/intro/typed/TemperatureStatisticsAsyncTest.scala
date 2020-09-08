@@ -22,7 +22,10 @@ class TemperatureStatisticsAsyncTest extends AnyFlatSpec with Matchers with Befo
   override def afterAll(): Unit = testKit.shutdownTestKit()
 
   "TemperatureStatistics" should "fail to get any statistic before getting any reading" in {
-    val tempStatsBehavior = testKit.spawn(TemperatureStatistics(true))
+    val tempStatsBehavior =
+      testKit.spawn(
+        TemperatureStatistics(true)
+      ) // we don't want TemperatureGatherer starting to gather temp and sending it over to the parent
 
     val probe = testKit.createTestProbe[Double]()
     tempStatsBehavior ! GetMaxTemperature(probe.ref)
@@ -36,7 +39,10 @@ class TemperatureStatisticsAsyncTest extends AnyFlatSpec with Matchers with Befo
   }
 
   it should "return statistics after reading temperatures" in {
-    val tempStatsBehavior = testKit.spawn(TemperatureStatistics(true))
+    val tempStatsBehavior =
+      testKit.spawn(
+        TemperatureStatistics(true)
+      ) // we don't want TemperatureGatherer starting to gather temp and sending it over to the parent
 
     val probe = testKit.createTestProbe[Double]()
 
