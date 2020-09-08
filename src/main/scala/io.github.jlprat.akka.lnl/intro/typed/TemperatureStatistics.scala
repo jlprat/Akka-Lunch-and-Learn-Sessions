@@ -16,9 +16,9 @@ object TemperatureStatistics {
   case class GetMinTemperature(replyTo: ActorRef[Double])     extends Command
   case class GetAverageTemperature(replyTo: ActorRef[Double]) extends Command
 
-  def apply(): Behavior[Command] =
+  def apply(testMode: Boolean = false): Behavior[Command] =
     Behaviors.setup { context =>
-      val _ = context.spawn(TemperatureGatherer(context.self, Util.getTemperature), "TempGatherer")
+      context.spawn(TemperatureGatherer(context.self, Util.getTemperature, testMode), "TempGatherer")
       Behaviors.receiveMessage {
         case TemperatureReading(value) =>
           context.log.info(s"Temperature received $value")

@@ -1,7 +1,7 @@
 package io.github.jlprat.akka.lnl.intro.classic
 
 import akka.actor.ActorSystem
-import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
+import akka.testkit.{ImplicitSender, TestKit}
 
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
@@ -31,20 +31,20 @@ class TemperatureStatisticsAsyncTest
 
   "TemperatureStatistics Async" should "fail to get any statistic before getting any reading" in {
 
-    val temperatureStatistics = system.actorOf(TemperatureStatistics.props())
+    val temperatureStatistics = system.actorOf(TemperatureStatistics.propsSyncTesting())
 
     temperatureStatistics ! GetMaxTemperature
-    expectNoMessage(200.millis)
+    expectNoMessage(100.millis)
 
     temperatureStatistics ! GetMinTemperature
-    expectNoMessage(200.millis)
+    expectNoMessage(100.millis)
 
     temperatureStatistics ! GetAverageTemperature
-    expectNoMessage(200.millis)
+    expectNoMessage(100.millis)
   }
 
   it should "return statistics after reading temperatures" in {
-    val temperatureStatistics = TestActorRef[TemperatureStatistics]
+    val temperatureStatistics = system.actorOf(TemperatureStatistics.propsSyncTesting())
     temperatureStatistics ! TemperatureReading(40.1)
     temperatureStatistics ! TemperatureReading(34.9)
 

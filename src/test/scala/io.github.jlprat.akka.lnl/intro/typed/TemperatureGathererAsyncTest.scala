@@ -36,6 +36,7 @@ class TemperatureGathererAsyncTest
     val fakeFather = TestProbe[TemperatureStatistics.Command]()
     spawn(TemperatureGatherer(fakeFather.ref, fakeSysCallToCheckTemp))
     manualTime.expectNoMessageFor(10.millis, fakeFather)
+    manualTime.timePasses(100.millis)
     fakeFather.expectMessage(TemperatureStatistics.TemperatureReading(32.3))
   }
 

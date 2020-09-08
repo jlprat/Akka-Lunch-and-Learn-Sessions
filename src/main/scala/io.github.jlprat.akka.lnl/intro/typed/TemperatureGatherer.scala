@@ -16,21 +16,22 @@ object TemperatureGatherer {
 
   def apply(
       parent: ActorRef[TemperatureStatistics.Command],
-      obtainTemp: ExecutionContext => Future[Double]
+      obtainTemp: ExecutionContext => Future[Double],
+      testMode: Boolean = false
   ): Behavior[Command] =
     Behaviors.setup { context =>
       implicit val ec: ExecutionContext =
         context.system.dispatchers.lookup(DispatcherSelector.blocking())
 
       Behaviors.withTimers { timers =>
-        timers.startSingleTimer(CheckTemperature, 10.millis)
+        if (!testMode) timers.startSingleTimer(CheckTemperature, 10.millis)
         Behaviors.receiveMessage {
           case CheckTemperature =>
             context.pipeToSelf(obtainTemp(ec)) {
               case Success(temp) => ReadTemperature(temp)
               case Failure(ex)   => throw ex
             }
-            timers.startSingleTimer(CheckTemperature, 100.millis)
+            if (!testMode) timers.startSingleTimer(CheckTemperature, 100.millis)
             Behaviors.same
           case ReadTemperature(temp) =>
             if (temp > 50.0) context.log.info(s"It's too hot here! $temp °C")

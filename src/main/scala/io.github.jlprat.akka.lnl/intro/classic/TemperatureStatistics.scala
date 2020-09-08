@@ -12,13 +12,14 @@ object TemperatureStatistics {
   case object GetMinTemperature
   case object GetAverageTemperature
 
-  def props(): Props = Props(classOf[TemperatureStatistics])
+  def propsSyncTesting(): Props = Props(classOf[TemperatureStatistics], true)
+  def props(): Props            = Props(classOf[TemperatureStatistics], false)
 }
 
 /**
   * This class models an actor that receives read temperatures and generates statistics about it
   */
-class TemperatureStatistics extends Actor with ActorLogging {
+class TemperatureStatistics(val testMode: Boolean) extends Actor with ActorLogging {
 
   var maxTemp: Double            = Double.MinValue
   var minTemp: Double            = Double.MaxValue
@@ -26,7 +27,9 @@ class TemperatureStatistics extends Actor with ActorLogging {
   var events: Long               = 0
 
   override def preStart(): Unit = {
-    val _ = context.actorOf(TemperatureGatherer.props(Util.getTemperature))
+    val _ =
+      if (testMode) context.actorOf(TemperatureGatherer.propsSyncTesting(Util.getTemperature))
+      else context.actorOf(TemperatureGatherer.props(Util.getTemperature))
   }
 
   /**
@@ -42,7 +45,7 @@ class TemperatureStatistics extends Actor with ActorLogging {
       context.become(withData)
     case _ =>
       log.info("No Data")
-      //throw new IllegalStateException("No Temperature Data")
+      throw new IllegalStateException("No Temperature Data")
   }
 
   /**

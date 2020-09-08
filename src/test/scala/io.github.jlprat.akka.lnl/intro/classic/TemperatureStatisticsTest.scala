@@ -38,11 +38,12 @@ class TemperatureStatisticsTest
 
   "TemperatureStatistics" should "fail to get any statistic before getting any reading" in {
 
-    val temperatureStatistics = TestActorRef[TemperatureStatistics]
+    val temperatureStatistics = TestActorRef[TemperatureStatistics](TemperatureStatistics.propsSyncTesting())
     val futureMaxTemp         = temperatureStatistics ? GetMaxTemperature
     futureMaxTemp.failed.futureValue.isInstanceOf[IllegalStateException]
 
     val futureMinTemp = temperatureStatistics ? GetMinTemperature
+    println("@#$#@@#$#@$" + futureMinTemp.failed.futureValue)
     futureMinTemp.failed.futureValue.isInstanceOf[IllegalStateException]
 
     val futureAverageTemp = temperatureStatistics ? GetAverageTemperature
@@ -50,7 +51,7 @@ class TemperatureStatisticsTest
   }
 
   it should "read temperatures" in {
-    val temperatureStatistics = TestActorRef[TemperatureStatistics]
+    val temperatureStatistics = TestActorRef[TemperatureStatistics](TemperatureStatistics.propsSyncTesting())
     temperatureStatistics ! TemperatureReading(40.1)
 
     temperatureStatistics.underlyingActor.events shouldBe 1
@@ -68,18 +69,22 @@ class TemperatureStatisticsTest
   }
 
   it should "return statistics after reading temperatures" in {
-    val temperatureStatistics = TestActorRef[TemperatureStatistics]
+    val temperatureStatistics = TestActorRef[TemperatureStatistics](TemperatureStatistics.propsSyncTesting())
     temperatureStatistics ! TemperatureReading(40.1)
     temperatureStatistics ! TemperatureReading(34.9)
 
     val futureMaxTemp = temperatureStatistics ? GetMaxTemperature
     futureMaxTemp.futureValue shouldBe 40.1
+    //accessing the underlying actor is also possible
+    temperatureStatistics.underlyingActor.maxTemp shouldBe 40.1
 
     val futureMinTemp = temperatureStatistics ? GetMinTemperature
     futureMinTemp.futureValue shouldBe 34.9
+    temperatureStatistics.underlyingActor.minTemp shouldBe 34.9
 
     val futureAverageTemp = temperatureStatistics ? GetAverageTemperature
     futureAverageTemp.futureValue shouldBe 37.5
+    temperatureStatistics.underlyingActor.averageTemperature shouldBe 37.5
 
   }
 

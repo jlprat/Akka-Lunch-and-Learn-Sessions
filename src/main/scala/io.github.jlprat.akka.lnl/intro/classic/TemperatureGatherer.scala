@@ -1,6 +1,6 @@
 package io.github.jlprat.akka.lnl.intro.classic
 
-import akka.actor.{Actor, ActorLogging, Timers, Props}
+import akka.actor.{Actor, ActorLogging, Props, Timers}
 import akka.pattern.pipe
 
 import scala.concurrent.duration._
@@ -13,15 +13,20 @@ object TemperatureGatherer {
   sealed trait Command
   case object CheckTemperature extends Command
 
-  def props(tempChecker: ExecutionContext => Future[Double]): Props = Props(new TemperatureGatherer(tempChecker))
+  def propsSyncTesting(tempChecker: ExecutionContext => Future[Double]): Props =
+    Props(new TemperatureGatherer(tempChecker, true))
+  def props(tempChecker: ExecutionContext => Future[Double]): Props =
+    Props(new TemperatureGatherer(tempChecker, false))
 }
 
-class TemperatureGatherer(val tempChecker: Function[ExecutionContext, Future[Double]])
-    extends Actor
+class TemperatureGatherer(
+    val tempChecker: Function[ExecutionContext, Future[Double]],
+    val testMode: Boolean
+) extends Actor
     with ActorLogging
     with Timers {
 
-  timers.startSingleTimer(TimerKey, CheckTemperature, 0.millis)
+  if (!testMode) timers.startSingleTimer(TimerKey, CheckTemperature, 0.millis)
 
   val blockingEc = context.system.dispatchers.lookup("blocking-io-dispatcher")
 
@@ -29,9 +34,9 @@ class TemperatureGatherer(val tempChecker: Function[ExecutionContext, Future[Dou
     case CheckTemperature =>
       val eventualTemp = tempChecker(blockingEc)
       pipe(eventualTemp)(context.dispatcher) to self
-      timers.startSingleTimer(TimerKey, CheckTemperature, 100.millis)
-    case temp:Double =>
-      if(temp > 50.0) log.info(s"It's too hot here! $temp °C")
+      if (!testMode) timers.startSingleTimer(TimerKey, CheckTemperature, 100.millis)
+    case temp: Double =>
+      if (temp > 50.0) log.info(s"It's too hot here! $temp °C")
       context.parent ! TemperatureStatistics.TemperatureReading(temp)
   }
 
