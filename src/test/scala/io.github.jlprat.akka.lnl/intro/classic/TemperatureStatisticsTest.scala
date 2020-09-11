@@ -19,6 +19,7 @@ import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics.{
   GetMinTemperature,
   TemperatureReading
 }
+import akka.pattern.AskTimeoutException
 
 /**
   * Unit Test approach to actors. Tends to result on whitebox testing
@@ -43,14 +44,13 @@ class TemperatureStatisticsTest
         TemperatureStatistics.propsSyncTesting()
       ) // we don't want TemperatureGatherer starting to gather temp and sending it over to the parent
     val futureMaxTemp = temperatureStatistics ? GetMaxTemperature
-    futureMaxTemp.failed.futureValue.isInstanceOf[IllegalStateException]
+    futureMaxTemp.failed.futureValue shouldBe an[AskTimeoutException]
 
     val futureMinTemp = temperatureStatistics ? GetMinTemperature
-    println("@#$#@@#$#@$" + futureMinTemp.failed.futureValue)
-    futureMinTemp.failed.futureValue.isInstanceOf[IllegalStateException]
+    futureMinTemp.failed.futureValue shouldBe an[AskTimeoutException]
 
     val futureAverageTemp = temperatureStatistics ? GetAverageTemperature
-    futureAverageTemp.failed.futureValue.isInstanceOf[IllegalStateException]
+    futureAverageTemp.failed.futureValue shouldBe an[AskTimeoutException]
   }
 
   it should "read temperatures" in {
