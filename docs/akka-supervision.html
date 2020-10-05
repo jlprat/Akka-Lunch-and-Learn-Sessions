@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>Supervising Akka</title>
+
+	<link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+
+	<link rel="stylesheet" href="dist/reset.css">
+	<link rel="stylesheet" href="dist/reveal.css">
+	<link rel="stylesheet" href="dist/theme/beige.css" id="theme">
+
+	<!-- Theme used for syntax highlighted code -->
+	<link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<a href="https://akka.io"><img src="images/akka-reverse-large.png" alt="Akka Logo"
+						style="background-color: #15a9ce;"></a>
+				<h2>Supervising Akka</h2>
+				<p>
+					<small>Josep Prat &nbsp;<a href="https://github.com/jlprat"><img src="images/GitHub-Mark-32px.png"
+								alt="GitHub Logo" style="margin: 0"></a>&nbsp;- 2020/10/xx </small>
+				</p>
+			</section>
+			<section>
+				<h3>Link to the companion Repo</h3>
+				<p>
+					<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/"><img src="images/akka-lunch-learn.svg"
+							alt="QR code for the repository"></a>
+				</p>
+			</section>
+			<section>
+				<h3>Questions:</h3>
+				<ul>
+					<li>What is the Actor Lifecycle?</li>
+					<li>How to supervise Actors?</li>
+					<li>How to initialize tasks in Actors?</li>
+					<li>How to gracefully finish tasks in Actors?</li>
+					<li>How to test Actor hierarchies?</li>
+				</ul>
+			</section>
+			<section>
+				<h3>title</h3>
+				<p>
+					Text
+				</p>
+			</section>
+			<section>
+				<h3>Thanks! And leave feedback!</h3>
+				<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
+					target="_blank">Write Feedback!</a>
+				<p>
+					<small>Josep Prat &nbsp;<a href="https://github.com/jlprat"><img src="images/GitHub-Mark-32px.png"
+								alt="GitHub Logo" style="margin: 0"></a>&nbsp;- 2020/10/xx </small>
+				</p>
+			</section>
+		</div>
+	</div>
+
+	<script src="dist/reveal.js"></script>
+	<script src="plugin/notes/notes.js"></script>
+	<script src="plugin/markdown/markdown.js"></script>
+	<script src="plugin/highlight/highlight.js"></script>
+	<script src="plugin/zoom/zoom.js"></script>
+	<script src="plugin/highlight/highlight.js"></script>
+
+	<script>
+		// More info about initialization & config:
+		// - https://revealjs.com/initialization/
+		// - https://revealjs.com/config/
+		Reveal.initialize({
+			hash: true,
+			controls: true,
+			progress: true,
+			showSlideNumber: 'all',
+			center: true,
+			transition: 'convex', // none/fade/slide/convex/concave/zoom
+			// Learn about plugins: https://revealjs.com/plugins/
+			plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom, RevealHighlight]
+		});
+	</script>
+</body>
+
+</html>
