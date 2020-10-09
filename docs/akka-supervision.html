@@ -109,15 +109,37 @@
 				</p>
 			</section>
 			<section>
-				<h3>What is the Actor Lifecycle?</h3>
+				<h3>How to supervise Actors?</h3>
 				<p>
-					Actors can monitor their children lifecycle and decide the course of action in case of failures. This is called supervision.
+					Supervision is the act of deciding how to react when Failures occur.
 				</p>
 			</section>
 			<section>
 				<h3>How to supervise Actors?</h3>
 				<p>
-					
+					There 3 different main approaches when supervising:
+					<ul>
+						<li>Resume, keeping the current state</li>
+						<li>Restart, discarding the current state</li>
+						<li>Stop</li>
+					</ul>
+				</p>
+			</section>
+			<section>
+				<h3>How to supervise Actors?</h3>
+				<p>
+					Default Supervision strategy differs between Akka Classic and Typed:
+					<ul>
+						<li>Akka Classic: The actor is restarted</li>
+						<li>Akka Typed: The actor is stopped</li>
+					</ul>
+				</p>
+			</section>
+			<section>
+				<h3>How to supervise Actors?</h3>
+				<p>
+					Supervision strategy is traditionally defined within the parent actor. However, in Akka Typed, it could also
+					be defined withing the same actor.
 				</p>
 			</section>
 			<section>
