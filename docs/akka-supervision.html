@@ -49,7 +49,7 @@
 			<section>
 				<h3>What is the Actor Lifecycle?</h3>
 				<p>
-					An actor is a stateful resource that can be started, stopped and restarted. <br/>
+					An actor is a stateful resource that can be started, stopped and restarted. <br />
 					Akka Typed and Akka Classic actors show some differences in their default lifecycle.
 				</p>
 			</section>
@@ -57,11 +57,11 @@
 				<h3>What is the Actor Lifecycle?</h3>
 				<p>
 					Actors offer lifecycle hooks to execute custom tasks on:
-					<ul>
-						<li>Startup</li>
-						<li>Shutdown</li>
-						<li>Restart</li>
-					</ul>
+				<ul>
+					<li>Startup</li>
+					<li>Shutdown</li>
+					<li>Restart</li>
+				</ul>
 				</p>
 			</section>
 			<section>
@@ -73,39 +73,43 @@
 			<section>
 				<h3>What is the Actor Lifecycle?</h3>
 				<p>
-					Classic Actors rely on methods that can be overridden: <code>preStart</code>, <code>preRestart</code>, <code>postRestart</code> and <code>postStop</code>.
+					Classic Actors rely on methods that can be overridden: <code>preStart</code>, <code>preRestart</code>,
+					<code>postRestart</code> and <code>postStop</code>.
 				</p>
 			</section>
 			<section>
 				<h3>What is the Actor Lifecycle?</h3>
 				<p>
-					Meanwhile, Akka Actors uses a combination of signals (<code>PreRestart</code> and <code>PostStop</code>) and code inside <code>Behaviors.setup</code>.
+					Meanwhile, Akka Actors uses a combination of signals (<code>PreRestart</code> and <code>PostStop</code>) and
+					code inside <code>Behaviors.setup</code>.
 				</p>
 			</section>
 			<section>
 				<h3>What is the Actor Lifecycle?</h3>
 				<p>
 					If the actor encounters some failure and throws an <code>Exception</code> the actor will:
-					<ul>
-						<li>Restart in Akka Classic</li>
-						<li>Stop in Akka Typed</li>
-					</ul>
+				<ul>
+					<li>Restart in Akka Classic</li>
+					<li>Stop in Akka Typed</li>
+				</ul>
 				</p>
 			</section>
 			<section>
 				<h3>What is the Actor Lifecycle?</h3>
 				<p>
-					Actors can monitor their children lifecycle and decide the course of action in case of failures. This is called supervision.
+					Actors can monitor their children lifecycle and decide the course of action in case of failures. This is
+					called supervision.
 				</p>
 			</section>
 			<section>
 				<h3>How to supervise Actors?</h3>
 				<p>
 					An important distinction:
-					<ul>
-						<li>Error: Is an expected wrong behavior, e.g., a validation error.</li>
-						<li>Failure: Is an unexpected event that prevents the actor from continuing their work, e.g., broken DB connection.</li>
-					</ul>
+				<ul>
+					<li>Error: Is an expected wrong behavior, e.g., a validation error.</li>
+					<li>Failure: Is an unexpected event that prevents the actor from continuing their work, e.g., broken DB
+						connection.</li>
+				</ul>
 				</p>
 			</section>
 			<section>
@@ -118,21 +122,21 @@
 				<h3>How to supervise Actors?</h3>
 				<p>
 					There 3 different main approaches when supervising:
-					<ul>
-						<li>Resume, keeping the current state</li>
-						<li>Restart, discarding the current state</li>
-						<li>Stop</li>
-					</ul>
+				<ul>
+					<li>Resume, keeping the current state</li>
+					<li>Restart, discarding the current state</li>
+					<li>Stop</li>
+				</ul>
 				</p>
 			</section>
 			<section>
 				<h3>How to supervise Actors?</h3>
 				<p>
 					Default Supervision strategy differs between Akka Classic and Typed:
-					<ul>
-						<li>Akka Classic: The actor is restarted</li>
-						<li>Akka Typed: The actor is stopped</li>
-					</ul>
+				<ul>
+					<li>Akka Classic: The actor is restarted</li>
+					<li>Akka Typed: The actor is stopped</li>
+				</ul>
 				</p>
 			</section>
 			<section>
@@ -141,6 +145,32 @@
 					Supervision strategy is traditionally defined within the parent actor. However, in Akka Typed, it could also
 					be defined withing the same actor.
 				</p>
+			</section>
+			<section>
+				<h3>How to supervise Actors?</h3>
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|8">import akka.actor.{Actor, Props}
+object Guardian {
+
+  sealed trait Command
+  case object Init extends Command
+
+  def supervise(behavior: Behavior[Node.Command]): Behavior[Node.Command] =
+    Behaviors.supervise(behavior).onFailure[IllegalStateException](SupervisorStrategy.resume)
+
+  def apply(): Behavior[Command] =
+    Behaviors.receive {
+      case (context, Init) =>
+        context.spawnAnonymous(supervise(Node()))
+        initialized()
+    }
+
+  def initialized(): Behavior[Command] =
+    Behaviors.receiveMessage {
+      case _ => throw new IllegalStateException("Already initialized")
+    }
+
+}
+				</code></pre>
 			</section>
 			<section>
 				<h3>Thanks! And leave feedback!</h3>
