@@ -369,8 +369,41 @@ object Initialization {
 				<p>Restarts? How can we execute different tasks on restart than the start ones?</p>
 			</section>
 			<section>
-				<h3>How to initialize tasks in Actors? - Restarts</h3>
-				
+				<h3>How to initialize tasks in Actors? - Restarts in Akka Classic</h3>
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|3-6|8-22|24-32">class Restart extends Actor {
+
+  override def preStart(): Unit = {
+    // We create our children, but we want to keep them on restarts
+    initChildren()
+  }
+
+  /**
+    * default implementation:
+    *
+    * def preRestart(@unused reason: Throwable, @unused message: Option[Any]): Unit = {
+    *   context.children.foreach { child =>
+    *     context.unwatch(child)
+    *     context.stop(child)
+    *   }
+    *   postStop()
+    * }
+    */
+  override def preRestart(reason: Throwable, message: Option[Any]): Unit = {
+    // We don't stop our children anymore!
+    postStop()
+  }
+
+  /**
+    * Default implementation
+    * def postRestart(@unused reason: Throwable): Unit = {
+    *   preStart()
+    * }
+    */
+  override def postRestart(reason: Throwable): Unit = {
+    // we do not call `preStart` so no new children are created
+  }
+  ...
+}</code></pre>
 			</section>
 			<section>
 				<h3>Thanks! And leave feedback!</h3>
