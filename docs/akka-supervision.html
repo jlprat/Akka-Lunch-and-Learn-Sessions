@@ -275,6 +275,104 @@ object SupervisionExample {
 }</code></pre>
 			</section>
 			<section>
+				<h3>How to supervise Actors?</h3>
+				<p>There are other possibilities for supervision like the back-off ones where actors will wait for some specified time before restarting </p>
+			</section>
+			<section>
+				<h3>How to initialize tasks in Actors?</h3>
+				<p>There are several possibilities:</p>
+				<ul>
+					<li>In the constructor (if you use this style in Akka Typed)</li>
+					<li>Using <code>preStart</code> or <code>Behaviors.setup</code> hooks</li>
+					<li>Via initialization message</li>
+				</ul>
+			</section>
+			<section>
+				<h3>How to initialize tasks in Actors? - Akka Classic</h3>
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|3-4|6-9|11-16">class Initialization extends Actor {
+
+  // Constructor initialization
+  initDB()
+
+  // Pre Start Hook initialization
+  override def preStart(): Unit = {
+    initDB()
+  }
+
+  override def receive: Actor.Receive = {
+    case Init => 
+      // Initialization via Message
+      initDB()
+    case _ => ??? // normal actor work
+  }
+
+  private def initDB(): Unit = ()
+  
+}</code></pre>
+			<small>All possibilities are shown, do not use all of them for the same task</small>
+			</section>
+			<section>
+				<h3>How to initialize tasks in Actors? - Akka Typed</h3>
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|8-11|13-20">import akka.actor.typed.Behavior
+import akka.actor.typed.scaladsl.Behaviors
+
+object Initialization {
+  sealed trait Command
+  case object Init extends Command
+
+  def apply(): Behavior[Command] = Behaviors.setup{ _ =>
+
+    // Setup hook
+    initDB()
+
+    Behaviors.receiveMessage{
+      case Init => 
+        // Initialize via message
+        initDB()
+        Behaviors.same
+      case _ => //do normal things
+        Behaviors.same
+    }
+  }
+
+  private def initDB(): Unit = ()
+}</code></pre>
+				<small>All possibilities are shown, do not use all of them for the same task</small>
+			</section>
+			<section>
+				<h3>How to initialize tasks in Actors?</h3>
+				<h4>Constructor way:</h4>
+				<ul>
+					<li>Always ready for the actor</li>
+					<li>Also executed on restarts</li>
+					<li>Lacks customization</li>
+				</ul>
+			</section>
+			<section>
+				<h3>How to initialize tasks in Actors?</h3>
+				<h4>Hooks</h4>
+				<ul>
+					<li>Separation of concerns</li>
+					<li>Can be customized, i.e. execute on start but not on restart</li>
+				</ul>
+			</section>
+			<section>
+				<h3>How to initialize tasks in Actors?</h3>
+				<h4>Message</h4>
+				<ul>
+					<li>Extremely customizable</li>
+					<li>Useful for when more data/info is needed to initialize the task</li>
+				</ul>
+			</section>
+			<section>
+				<h3>How to initialize tasks in Actors?</h3>
+				<p>Restarts? How can we execute different tasks on restart than the start ones?</p>
+			</section>
+			<section>
+				<h3>How to initialize tasks in Actors? - Restarts</h3>
+				
+			</section>
+			<section>
 				<h3>Thanks! And leave feedback!</h3>
 				<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
 					target="_blank">Write Feedback!</a>
