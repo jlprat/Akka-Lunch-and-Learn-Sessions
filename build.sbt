@@ -4,8 +4,8 @@ version := "1.0"
 
 scalaVersion := "2.13.3"
 
-lazy val akkaVersion     = "2.6.8"
-lazy val akkaHttpVersion = "10.2.0"
+lazy val akkaVersion     = "2.6.10"
+lazy val akkaHttpVersion = "10.2.1"
 
 scalacOptions ++= Seq(
   "-deprecation", // Emit warning and location for usages of deprecated APIs.
@@ -51,7 +51,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion,
   "com.typesafe.akka" %% "akka-testkit"             % akkaVersion,
   "com.typesafe.akka" %% "akka-http-testkit"        % akkaHttpVersion,
-  "org.scalatest"     %% "scalatest"                % "3.2.1" % "test",
+  "org.scalatest"     %% "scalatest"                % "3.2.2" % "test",
   "ch.qos.logback"     % "logback-classic"          % "1.2.3"
 )
 
