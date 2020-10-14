@@ -406,6 +406,29 @@ object Initialization {
 }</code></pre>
 			</section>
 			<section>
+				<h3>How to initialize tasks in Actors? - Restarts in Akka Typed</h3>
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|5-17|7-15|10-15">object Restart {
+  sealed trait Command
+  case object DoThings extends Command
+
+  def apply(): Behavior[Command] =
+    Behaviors.setup { context =>
+      // This will be executed on Start
+      createChildren(context)
+      Behaviors.supervise {
+        // This code will be executed on Start and Restart
+        Behaviors.receiveMessage[Command] {
+          case DoThings =>
+            //Do things
+            Behaviors.same
+        }
+      }.onFailure[Exception](SupervisorStrategy.restart)
+    }
+
+  def createChildren(context: ActorContext[Command]): Unit = ()
+}</code></pre>
+			</section>
+			<section>
 				<h3>Thanks! And leave feedback!</h3>
 				<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
 					target="_blank">Write Feedback!</a>
