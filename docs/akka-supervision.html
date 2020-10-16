@@ -43,7 +43,6 @@
 					<li>How to supervise Actors?</li>
 					<li>How to initialize tasks in Actors?</li>
 					<li>How to gracefully finish tasks in Actors?</li>
-					<li>How to test Actor hierarchies?</li>
 				</ul>
 			</section>
 			<section>
@@ -428,6 +427,114 @@ object Initialization {
   def createChildren(context: ActorContext[Command]): Unit = ()
 }</code></pre>
 			</section>
+			<section>
+				<h3>How to gracefully finish tasks in Actors?</h3>
+				<p>To successfully realize a graceful shutdown of your actor system, you should define
+					to handle this situation in your top level actor a message.
+				</p>
+			</section>
+			<section>
+				<h3>How to gracefully finish tasks in Actors? - Akka Classic</h3>
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|21-27|23-26|29-31">import akka.actor.{Actor, ActorLogging, Props}
+import io.github.jlprat.akka.lnl.supervision.classic.Shutdown._
+
+object Shutdown {
+
+  sealed trait Command
+  case object Init             extends Command
+  case object GracefulShutdown extends Command
+
+  def props(): Props = Props(classOf[Shutdown])
+}
+
+class Shutdown extends Actor with ActorLogging {
+
+  override def receive: Actor.Receive = {
+    case Init => spawnChildren()
+    case GracefulShutdown =>
+      log.error("I'm not yet initialized!")
+  }
+
+  def initialized: Actor.Receive = {
+    case Init => log.error("I'm already initialized!")
+    case GracefulShutdown =>
+      log.info("Pre Cleaning Up Tasks")
+      // After this actor is stopped, all children will also be stopped
+      context.stop(self)
+  }
+
+  override def postStop(): Unit = {
+    log.info("Post Clean Up Tasks")
+  }
+
+  def spawnChildren(): Unit = ()
+}</code></pre>	
+			</section>
+			<section>
+				<h3>How to gracefully finish tasks in Actors? - Akka Classic</h3>
+				<p>Akka Classic offers a handy method to wait for this GracefulShutdown:</p>
+				<pre><code class="scala" data-trim>import akka.pattern.gracefulStop
+import scala.concurrent.Await
+
+try {
+  val stopped: Future[Boolean] = 
+    gracefulStop(actorRef, 5 seconds, Shutdown.GracefulShutdown)
+  Await.result(stopped, 6 seconds)
+  // the actor has been stopped
+} catch {
+  // the actor wasn't stopped within 5 seconds
+  case e: akka.pattern.AskTimeoutException =>
+}</code></pre>
+			</section>
+			<section>
+				<h3>How to gracefully finish tasks in Actors? - Akka Classic</h3>
+				<p>In case you don't need to perform any special pre clean up tasks on shutdown, Akka Clasic offers a special message named <code>PoisonPill</code>.
+				This message will be enqueued in the Actors's Mailbox and when processed will automatically shutdown itself.</p>
+			</section>
+			<section>
+				<h3>How to gracefully finish tasks in Actors? - Akka Typed</h3>
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|23-31|24-27|32-36">import akka.actor.typed.{Behavior, PostStop}
+import akka.actor.typed.scaladsl.{ActorContext, Behaviors}
+
+import scala.annotation.nowarn
+
+object Shutdown {
+  sealed trait Command
+  case object Init             extends Command
+  case object GracefulShutdown extends Command
+
+  def apply(): Behavior[Command] =
+    Behaviors.receive {
+      case (context, Init) =>
+        spawnChildren(context)
+        initialized()
+      case (context, _) =>
+        context.log.error("I'm not initialized!")
+        Behaviors.same
+    }
+
+  def initialized(): Behavior[Command] =
+    Behaviors
+      .receive[Command] {
+        case (context, GracefulShutdown) =>
+          context.log.info("Pre Cleaning Up Tasks")
+          // After this actor is stopped, all children will also be stopped
+          Behaviors.stopped
+        case (context, Init) =>
+          context.log.error("I'm already initialized")
+          Behaviors.same
+      }
+      .receiveSignal {
+        case (context, PostStop) =>
+          context.log.info("Post Cleaning Up Tasks")
+          Behaviors.same
+      }
+
+  @nowarn
+  def spawnChildren(context: ActorContext[Command]): Unit = ()
+}</code></pre>
+			</section>
+			
 			<section>
 				<h3>Thanks! And leave feedback!</h3>
 				<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
