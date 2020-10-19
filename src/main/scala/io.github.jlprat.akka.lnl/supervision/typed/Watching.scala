@@ -1,8 +1,7 @@
 package io.github.jlprat.akka.lnl.supervision.typed
 
-import akka.actor.typed.{ActorRef, Behavior}
+import akka.actor.typed.{ActorRef, Behavior, ChildFailed, Terminated}
 import akka.actor.typed.scaladsl.Behaviors
-import akka.actor.typed.{ChildFailed, Terminated}
 
 object Watching {
 

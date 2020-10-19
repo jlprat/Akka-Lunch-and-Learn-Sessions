@@ -546,8 +546,84 @@ object Shutdown {
 				<p>Useful for cases when an actor spins children to perform tasks, and wants to notify end users the status of given job.</p>
 			</section>
 			<section>
-				<h3>How do I watch my children?</h3>
-				
+				<h3>How do I watch my children? - Akka Classic</h3>
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|8|10-11">class Parent extends Actor with ActorLogging {
+
+  var jobs: Map[ActorRef, ActorRef] = Map.empty
+
+  override def receive: Actor.Receive = {
+    case StartJob(code) =>
+      val child = context.actorOf(Child.props(code))
+      val _     = context.watch(child)
+      jobs = jobs + (child -> sender())
+    case Terminated(ref) =>
+      jobs(ref) ! "Done"
+  }
+}</code></pre>
+			</section>
+			<section>
+				<h3>How do I watch my children? - Akka Typed</h3>
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|20|24-33|25-28|29-32">import akka.actor.typed.{ActorRef, Behavior, ChildFailed, Terminated}
+import akka.actor.typed.scaladsl.Behaviors
+
+object Watching {
+
+  sealed trait JobState
+  case object Finished extends JobState
+  case object Failed   extends JobState
+
+  sealed trait Command
+  case class StartJob(code: String, replyTo: ActorRef[JobState]) extends Command
+
+  var jobs: Map[ActorRef[Nothing], ActorRef[JobState]] = Map.empty
+
+  def apply(): Behavior[Command] =
+    Behaviors
+      .receive[Command] {
+        case (context, StartJob(code, replyTo)) =>
+          val child = context.spawnAnonymous[Nothing](job(code))
+          context.watch(child)
+          jobs = jobs + (child -> replyTo)
+          Behaviors.same
+      }
+      .receiveSignal {
+        case (_, Terminated(ref)) =>
+          jobs(ref).tell(Finished)
+          jobs = jobs - ref
+          Behaviors.same
+        case (_, ChildFailed(ref, _)) =>
+          jobs(ref).tell(Failed)
+          jobs = jobs - ref
+          Behaviors.same
+      }
+}</code></pre>
+			</section>
+			<section>
+				<h3>How do I watch my children? - Akka Typed</h3>
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|18|20-22">import akka.actor.typed.{ActorRef, Behavior}
+import akka.actor.typed.scaladsl.Behaviors
+
+object WatchingAlt {
+
+  sealed trait JobState
+  case object Finished extends JobState
+
+  sealed trait Command
+  case class StartJob(code: String, replyTo: ActorRef[JobState]) extends Command
+  case class FinishedJob(replyTo: ActorRef[JobState]) extends Command
+
+  def apply(): Behavior[Command] =
+    Behaviors
+      .receive[Command] {
+        case (context, StartJob(code, replyTo)) =>
+          val child = context.spawnAnonymous[Nothing](job(code))
+          context.watchWith(child, FinishedJob(replyTo))
+          Behaviors.same
+        case (_, FinishedJob(replyTo)) =>
+          replyTo ! Finished
+          Behaviors.same
+      }
+}</code></pre>
 			</section>
 			<section>
 				<h3>Thanks! And leave feedback!</h3>

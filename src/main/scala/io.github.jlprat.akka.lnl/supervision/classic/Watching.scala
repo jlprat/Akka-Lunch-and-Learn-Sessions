@@ -1,11 +1,7 @@
 package io.github.jlprat.akka.lnl.supervision.classic
 
-import akka.actor.Props
-import akka.actor.Actor
-import akka.actor.ActorLogging
+import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import io.github.jlprat.akka.lnl.supervision.classic.Watching.Parent.StartJob
-import akka.actor.Terminated
-import akka.actor.ActorRef
 
 object Watching {
 
@@ -23,9 +19,9 @@ object Watching {
     override def receive: Actor.Receive = {
       case StartJob(code) =>
         val child = context.actorOf(Child.props(code))
-        val _ = context.watch(child)
+        val _     = context.watch(child)
         jobs = jobs + (child -> sender())
-      case Terminated(ref) => 
+      case Terminated(ref) =>
         jobs(ref) ! "Done"
 
     }
@@ -43,7 +39,7 @@ object Watching {
     context.stop(self)
 
     override def receive: Actor.Receive = {
-      case _ =>        
+      case _ =>
     }
   }
 }
