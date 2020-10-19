@@ -42,7 +42,9 @@
 					<li>What is the Actor Lifecycle?</li>
 					<li>How to supervise Actors?</li>
 					<li>How to initialize tasks in Actors?</li>
+					<li>How to deal with Restarts in Actors?</li>
 					<li>How to gracefully finish tasks in Actors?</li>
+					<li>How to watch my children?</li>
 				</ul>
 			</section>
 			<section>
@@ -364,11 +366,11 @@ object Initialization {
 				</ul>
 			</section>
 			<section>
-				<h3>How to initialize tasks in Actors?</h3>
-				<p>Restarts? How can we execute different tasks on restart than the start ones?</p>
+				<h3>How to deal with Restarts in Actors?</h3>
+				<p>How can we execute different tasks on restart than the start ones?</p>
 			</section>
 			<section>
-				<h3>How to initialize tasks in Actors? - Restarts in Akka Classic</h3>
+				<h3>How to deal with Restarts in Actors? - Akka Classic</h3>
 				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|3-6|8-22|24-32">class Restart extends Actor {
 
   override def preStart(): Unit = {
@@ -405,7 +407,7 @@ object Initialization {
 }</code></pre>
 			</section>
 			<section>
-				<h3>How to initialize tasks in Actors? - Restarts in Akka Typed</h3>
+				<h3>How to deal with Restarts in Actors? - Akka Typed</h3>
 				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|5-17|7-15|10-15">object Restart {
   sealed trait Command
   case object DoThings extends Command
@@ -488,8 +490,12 @@ try {
 			</section>
 			<section>
 				<h3>How to gracefully finish tasks in Actors? - Akka Classic</h3>
-				<p>In case you don't need to perform any special pre clean up tasks on shutdown, Akka Clasic offers a special message named <code>PoisonPill</code>.
-				This message will be enqueued in the Actors's Mailbox and when processed will automatically shutdown itself.</p>
+				<p>Alternatively, use <code>PoisonPill</code>:</p>
+				<ul>
+					<li>No special pre clean up tasks</li>
+					<li>Message will be enqueued like any other message</li>
+					<li>Actor will shutdown itself when processing this message</li>
+				</ul>
 			</section>
 			<section>
 				<h3>How to gracefully finish tasks in Actors? - Akka Typed</h3>
@@ -534,7 +540,15 @@ object Shutdown {
   def spawnChildren(context: ActorContext[Command]): Unit = ()
 }</code></pre>
 			</section>
-			
+			<section>
+				<h3>How to watch my children?</h3>
+				<p>You can get notified when any other actor terminates (voluntarily or via <code>Exception</code>).</p>
+				<p>Useful for cases when an actor spins children to perform tasks, and wants to notify end users the status of given job.</p>
+			</section>
+			<section>
+				<h3>How do I watch my children?</h3>
+				
+			</section>
 			<section>
 				<h3>Thanks! And leave feedback!</h3>
 				<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
