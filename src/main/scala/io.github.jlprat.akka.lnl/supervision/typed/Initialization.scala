@@ -45,6 +45,7 @@ object Restart {
   def apply(): Behavior[Command] =
     Behaviors.setup { context =>
       // This will be executed on Start
+      context.log.info("Start")
       createChildren(context)
       Behaviors
         .supervise {
@@ -64,7 +65,7 @@ object Restart {
       .supervise[Command] {
         Behaviors.setup { context =>
           // This code will be executed on Start and Restart
-          println("init block")
+          context.log.info("Start & Restart")
 
           createChildren(context)
           Behaviors.receiveMessage {
@@ -78,7 +79,7 @@ object Restart {
       .onFailure(SupervisorStrategy.restart)
 
   def createChildren(context: ActorContext[Command]): ActorRef[ChildCommand] = {
-    println("creating child")
+    context.log.info("creating child")
     context.spawn(child, "child")
   }
 
