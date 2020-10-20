@@ -5,7 +5,7 @@ import akka.actor.typed.{ActorRef, Behavior, SupervisorStrategy}
 
 object Initialization {
   sealed trait Command
-  case object Init extends Command
+  case object Init     extends Command
   case object DoThings extends Command
 
   def apply(): Behavior[Command] =
@@ -20,7 +20,8 @@ object Initialization {
       }
     }
 
-  def withInitMessage(): Behavior[Command] = Behaviors.setup { context =>
+  def withInitMessage(): Behavior[Command] =
+    Behaviors.setup { context =>
       Behaviors.receiveMessage {
         case Init =>
           // Initialize via message
@@ -39,6 +40,7 @@ object Initialization {
 object Restart {
   sealed trait Command
   case object DoThings extends Command
+  case object Boom     extends Command
 
   def apply(): Behavior[Command] =
     Behaviors.setup { context =>
@@ -51,19 +53,39 @@ object Restart {
             case DoThings =>
               //Do things
               Behaviors.same
+            case Boom => throw new RuntimeException("Some problem")
           }
         }
-        .onFailure[Exception](SupervisorStrategy.restart)
+        .onFailure[Exception](SupervisorStrategy.restart.withStopChildren(false))
     }
 
+  def recreateChildOnRestart(): Behavior[Command] =
+    Behaviors
+      .supervise[Command] {
+        Behaviors.setup { context =>
+          // This code will be executed on Start and Restart
+          println("init block")
+
+          createChildren(context)
+          Behaviors.receiveMessage {
+            case DoThings =>
+              //Do things
+              Behaviors.same
+            case Boom => throw new RuntimeException("BD problem")
+          }
+        }
+      }
+      .onFailure(SupervisorStrategy.restart)
+
   def createChildren(context: ActorContext[Command]): ActorRef[ChildCommand] = {
-    context.spawn(child(), "child")
+    println("creating child")
+    context.spawn(child, "child")
   }
 
   sealed trait ChildCommand
   case object NoOp extends ChildCommand
 
-  def child(): Behavior[ChildCommand] =
+  val child: Behavior[ChildCommand] =
     Behaviors.receiveMessage {
       case NoOp => Behaviors.same
     }
