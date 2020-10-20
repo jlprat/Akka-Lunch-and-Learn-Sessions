@@ -423,7 +423,7 @@ object Initialization {
             //Do things
             Behaviors.same
         }
-      }.onFailure[Exception](SupervisorStrategy.restart)
+      }.onFailure[Exception](SupervisorStrategy.restart.withStopChildren(false))
     }
 
   def createChildren(context: ActorContext[Command]): Unit = ()
