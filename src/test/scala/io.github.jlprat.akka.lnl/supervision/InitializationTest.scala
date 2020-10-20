@@ -16,7 +16,6 @@ import akka.actor.testkit.typed.Effect.Stopped
 import akka.actor.testkit.typed.Effect.Watched
 import akka.actor.typed.ActorRef
 import io.github.jlprat.akka.lnl.supervision.typed.Restart.ChildCommand
-import io.github.jlprat.akka.lnl.supervision.typed.Restart.DoThings
 
 class InitializationTest extends AnyFlatSpec with Matchers {
   "Initialization Example variant 1" should "initialize the DB on start" in {
@@ -56,6 +55,6 @@ class InitializationTest extends AnyFlatSpec with Matchers {
     //println(childOnRestart.retrieveAllEffects())
     childOnRestart.expectEffectType[Watched[ActorRef[ChildCommand]]]
     childOnRestart.expectEffect(Stopped("child"))
-    childOnRestart.expectEffect(Spawned(Restart.child,"child"))
+    childOnRestart.expectEffect(Spawned(Restart.child,"child")) //FIXME this fails!
   }
 }
