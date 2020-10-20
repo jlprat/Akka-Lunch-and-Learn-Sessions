@@ -107,9 +107,9 @@
 				<p>
 					An important distinction:
 				<ul>
-					<li>Error: Is an expected wrong behavior, e.g., a validation error.</li>
+					<li>Error: Is an expected wrong behavior, e.g., a validation error</li>
 					<li>Failure: Is an unexpected event that prevents the actor from continuing their work, e.g., broken DB
-						connection.</li>
+						connection</li>
 				</ul>
 				</p>
 			</section>
@@ -277,7 +277,7 @@ object SupervisionExample {
 			</section>
 			<section>
 				<h3>How to supervise Actors?</h3>
-				<p>There are other possibilities for supervision like the back-off ones where actors will wait for some specified time before restarting </p>
+				<p>There are other possibilities for supervision like the back-off ones where actors will wait for some specified time before restarting.</p>
 			</section>
 			<section>
 				<h3>How to initialize tasks in Actors?</h3>
@@ -310,7 +310,7 @@ object SupervisionExample {
   private def initDB(): Unit = ()
   
 }</code></pre>
-			<small>All possibilities are shown, do not use all of them for the same task</small>
+			<small>All possibilities are shown, do not use all of them for the same task.</small>
 			</section>
 			<section>
 				<h3>How to initialize tasks in Actors? - Akka Typed</h3>
@@ -338,7 +338,7 @@ object Initialization {
 
   private def initDB(): Unit = ()
 }</code></pre>
-				<small>All possibilities are shown, do not use all of them for the same task</small>
+				<small>All possibilities are shown, do not use all of them for the same task.</small>
 			</section>
 			<section>
 				<h3>How to initialize tasks in Actors?</h3>
@@ -599,7 +599,7 @@ object Watching {
 }</code></pre>
 			</section>
 			<section>
-				<h3>How do I watch my children? - Akka Typed</h3>
+				<h3>How do I watch my children?</h3>
 				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|18|20-22">import akka.actor.typed.{ActorRef, Behavior}
 import akka.actor.typed.scaladsl.Behaviors
 
@@ -624,6 +624,11 @@ object WatchingAlt {
           Behaviors.same
       }
 }</code></pre>
+			</section>
+			<section>
+				<h3>How do I watch my children?</h3>
+				<p><code>watchWith</code> is present on both Akka Typed and Akka Classic. Ideal case for it, is when children
+				failures can be ignored.</p>
 			</section>
 			<section>
 				<h3>Thanks! And leave feedback!</h3>
