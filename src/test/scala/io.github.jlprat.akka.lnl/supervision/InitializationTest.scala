@@ -2,7 +2,12 @@ package io.github.jlprat.akka.lnl.supervision
 
 import akka.actor.testkit.typed.CapturedLogEvent
 import akka.actor.testkit.typed.Effect.Watched
-import akka.actor.testkit.typed.scaladsl.{BehaviorTestKit, LoggingTestKit, ScalaTestWithActorTestKit, Effects}
+import akka.actor.testkit.typed.scaladsl.{
+  BehaviorTestKit,
+  Effects,
+  LoggingTestKit,
+  ScalaTestWithActorTestKit
+}
 
 import akka.actor.typed.ActorRef
 

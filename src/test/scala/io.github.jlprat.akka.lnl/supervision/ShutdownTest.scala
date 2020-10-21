@@ -1,11 +1,11 @@
 package io.github.jlprat.akka.lnl.supervision
 
+import akka.actor.testkit.typed.scaladsl.{LoggingTestKit, ScalaTestWithActorTestKit}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.flatspec.AnyFlatSpecLike
+
 import io.github.jlprat.akka.lnl.supervision.typed.Shutdown
 import io.github.jlprat.akka.lnl.supervision.typed.Shutdown.GracefulShutdown
-import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
-import akka.actor.testkit.typed.scaladsl.LoggingTestKit
 import io.github.jlprat.akka.lnl.supervision.typed.Shutdown.Init
 
 class ShutdownTest extends ScalaTestWithActorTestKit with AnyFlatSpecLike with Matchers {
@@ -17,5 +17,6 @@ class ShutdownTest extends ScalaTestWithActorTestKit with AnyFlatSpecLike with M
     LoggingTestKit.info("Cleaning Up Tasks").withOccurrences(3).expect {
       shutdownBehavior.tell(GracefulShutdown)
     }
+
   }
 }
