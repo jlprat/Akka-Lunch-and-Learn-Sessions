@@ -2,8 +2,7 @@ package io.github.jlprat.akka.lnl.supervision.typed
 
 import akka.actor.typed.{Behavior, PostStop}
 import akka.actor.typed.scaladsl.{ActorContext, Behaviors}
-
-import scala.annotation.nowarn
+import akka.actor.typed.ActorRef
 
 object Shutdown {
   sealed trait Command
@@ -37,6 +36,18 @@ object Shutdown {
           Behaviors.same
       }
 
-  @nowarn
-  def spawnChildren(context: ActorContext[Command]): Unit = ()
+  def spawnChildren(context: ActorContext[Command]): ActorRef[ChildCommand] = {
+    context.spawn(child, "child")
+  }
+
+  sealed trait ChildCommand
+  case object NoOp extends ChildCommand
+
+  val child: Behavior[ChildCommand] = Behaviors.receiveMessage[ChildCommand] {
+    case NoOp => Behaviors.same
+  }.receiveSignal{
+    case (context, PostStop) =>
+        context.log.info("Child Post Cleaning Up Tasks")
+        Behaviors.same
+  }
 }
