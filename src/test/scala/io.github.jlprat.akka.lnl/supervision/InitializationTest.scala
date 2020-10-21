@@ -58,8 +58,6 @@ class InitializationTest extends ScalaTestWithActorTestKit with AnyFlatSpecLike 
     //childOnRestart.expectEffect(Effects.spawned(Restart.child,"child")) //FIXME this fails!
   }
 
-  override def afterAll(): Unit = testKit.shutdownTestKit()
-
   "Restart Example variant 1 async" should "start child only on start and not on restart" in {
     val childOnStart = testKit.spawn(Restart.apply())
     LoggingTestKit.info("creating child").withOccurrences(0).expect {
