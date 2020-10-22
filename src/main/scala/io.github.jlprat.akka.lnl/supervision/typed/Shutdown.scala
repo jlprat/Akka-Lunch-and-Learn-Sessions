@@ -4,6 +4,9 @@ import akka.actor.typed.{Behavior, PostStop}
 import akka.actor.typed.scaladsl.{ActorContext, Behaviors}
 import akka.actor.typed.ActorRef
 
+/**
+  * This behavior showcases how to listen to its own termination
+  */
 object Shutdown {
   sealed trait Command
   case object Init             extends Command
@@ -31,6 +34,7 @@ object Shutdown {
           Behaviors.same
       }
       .receiveSignal {
+        //Signal received when actor is stopped
         case (context, PostStop) =>
           context.log.info("Post Cleaning Up Tasks")
           Behaviors.same

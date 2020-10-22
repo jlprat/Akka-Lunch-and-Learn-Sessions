@@ -4,6 +4,9 @@ import akka.actor.typed.{ActorRef, Behavior, ChildFailed, SupervisorStrategy}
 import akka.actor.typed.scaladsl.Behaviors
 import scala.concurrent.duration._
 
+/**
+  * Little simplistic actor-backed key/value store
+  */
 object SupervisionExample {
 
   sealed trait Command
@@ -18,6 +21,13 @@ object SupervisionExample {
 
   case class Product(hash: String, tag: String, value: Int)
 
+  /**
+    * Supervision on given behavior where actor is allowed to restart 3 times within a second.
+    * More frequent restarts than the specified will cause the behavior to stop
+    *
+    * @param behavior to supervise
+    * @return Supervised [[Behavior]]
+    */
   def supervise(behavior: Behavior[NodeCommand]): Behavior[NodeCommand] =
     Behaviors
       .supervise(behavior)
@@ -45,6 +55,7 @@ object SupervisionExample {
       }
       .receiveSignal {
         case (context, ChildFailed(_, _)) =>
+          // In case the child is stopping due to too many consecutive failures, we stopped this behavior as well.
           context.log.error("I'm stopping")
           Behaviors.stopped
       }
@@ -56,6 +67,7 @@ object SupervisionExample {
         replyTo ! Key(hash)
         store(storage.updated(hash, Product(hash, tag, value)))
       case (context, Retrieve(key, _)) if !storage.contains(key.id) =>
+        //As the keys are "secret" if somebody is asking for an unknown key, it might mean we lost some state
         context.log.error("I might lost my state")
         throw new IllegalStateException("No such key!")
       case (_, Retrieve(key, replyTo)) =>

@@ -3,11 +3,17 @@ package io.github.jlprat.akka.lnl.supervision.typed
 import akka.actor.typed.scaladsl.{ActorContext, Behaviors}
 import akka.actor.typed.{ActorRef, Behavior, SupervisorStrategy}
 
+/**
+  * These behaviors model the different ways to initialize and actor's state
+  */
 object Initialization {
   sealed trait Command
   case object Init     extends Command
   case object DoThings extends Command
 
+  /**
+    * Behavior using the `init` hook to initialize its state
+    */
   def apply(): Behavior[Command] =
     Behaviors.setup { context =>
       // Setup hook
@@ -20,6 +26,9 @@ object Initialization {
       }
     }
 
+  /**
+    * Behavior using a dedicated message to initialize its state
+    */
   def withInitMessage(): Behavior[Command] =
     Behaviors.setup { context =>
       Behaviors.receiveMessage {
@@ -37,11 +46,17 @@ object Initialization {
   }
 }
 
+/**
+  * These behaviors model the different ways one can react to actor restarts in regards with their children
+  */
 object Restart {
   sealed trait Command
   case object DoThings extends Command
   case object Boom     extends Command
 
+  /**
+    * This behavior creates children on start but not on restart, leaving children intact
+    */
   def apply(): Behavior[Command] =
     Behaviors.setup { context =>
       // This will be executed on Start
@@ -60,6 +75,9 @@ object Restart {
         .onFailure[Exception](SupervisorStrategy.restart.withStopChildren(false))
     }
 
+  /**
+    * This behavior restarts its children when itself restarts
+    */
   def recreateChildOnRestart(): Behavior[Command] =
     Behaviors
       .supervise[Command] {

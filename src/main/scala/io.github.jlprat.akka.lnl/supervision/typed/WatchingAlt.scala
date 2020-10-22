@@ -3,6 +3,9 @@ package io.github.jlprat.akka.lnl.supervision.typed
 import akka.actor.typed.{ActorRef, Behavior}
 import akka.actor.typed.scaladsl.Behaviors
 
+/**
+  * Behavior showcasing the special `watchWith` method
+  */
 object WatchingAlt {
 
   sealed trait JobState
@@ -17,6 +20,7 @@ object WatchingAlt {
       .receive[Command] {
         case (context, StartJob(code, replyTo)) =>
           val child = context.spawnAnonymous[Nothing](job(code))
+          //When `child` is finished this behavior will receive the given message
           context.watchWith(child, FinishedJob(replyTo))
           Behaviors.same
         case (_, FinishedJob(replyTo)) =>
