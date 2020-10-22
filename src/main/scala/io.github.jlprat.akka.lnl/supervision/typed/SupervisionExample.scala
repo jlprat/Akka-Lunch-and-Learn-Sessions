@@ -1,9 +1,8 @@
 package io.github.jlprat.akka.lnl.supervision.typed
 
-import akka.actor.typed.{ActorRef, Behavior, SupervisorStrategy}
+import akka.actor.typed.{ActorRef, Behavior, ChildFailed, SupervisorStrategy}
 import akka.actor.typed.scaladsl.Behaviors
 import scala.concurrent.duration._
-import akka.actor.typed.ChildFailed
 
 object SupervisionExample {
 
@@ -34,19 +33,21 @@ object SupervisionExample {
     }
 
   def initialized(child: ActorRef[NodeCommand]): Behavior[Command] =
-    Behaviors.receiveMessage[Command] {
-      case Init => throw new IllegalStateException("Already initialized")
-      case c @ Save(_, _, _) =>
-        child.tell(c)
-        Behaviors.same
-      case c @ Retrieve(_, _) =>
-        child.tell(c)
-        Behaviors.same
-    }.receiveSignal {
-      case (context, ChildFailed(_, _)) => 
-        context.log.error("I'm stopping")
-        Behaviors.stopped
-    }
+    Behaviors
+      .receiveMessage[Command] {
+        case Init => throw new IllegalStateException("Already initialized")
+        case c @ Save(_, _, _) =>
+          child.tell(c)
+          Behaviors.same
+        case c @ Retrieve(_, _) =>
+          child.tell(c)
+          Behaviors.same
+      }
+      .receiveSignal {
+        case (context, ChildFailed(_, _)) =>
+          context.log.error("I'm stopping")
+          Behaviors.stopped
+      }
 
   def store(storage: Map[String, Product] = Map.empty): Behavior[NodeCommand] =
     Behaviors.receive {
