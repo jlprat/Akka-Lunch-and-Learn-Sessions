@@ -62,22 +62,26 @@ class SupervisionExampleTest extends ScalaTestWithActorTestKit with AnyFlatSpecL
     keyClient.expectMessage(expectedKey)
   }
 
-  it should "fail for good when 3 errors happen within a second" in {
+  it should "fail for good when more than 3 errors happen within a second" in {
     val supervisionExample = testKit.spawn(SupervisionExample())
     supervisionExample.tell(Init)
 
     val nonExistingKey = "DOESN'T EXIST"
     val storedClient   = testKit.createTestProbe[Stored]()
 
+    //failure number 1
     LoggingTestKit.error("I might lost my state").expect {
       supervisionExample.tell(Retrieve(Key(nonExistingKey), storedClient.ref))
     }
+    //failure number 2
     LoggingTestKit.error("I might lost my state").expect {
       supervisionExample.tell(Retrieve(Key(nonExistingKey), storedClient.ref))
     }
+    //failure number 3
     LoggingTestKit.error("I might lost my state").expect {
       supervisionExample.tell(Retrieve(Key(nonExistingKey), storedClient.ref))
     }
+    //failure number 4 -- Causes a full stop of the child and parent stops as well
     LoggingTestKit.error("I'm stopping").expect {
       supervisionExample.tell(Retrieve(Key(nonExistingKey), storedClient.ref))
     }
