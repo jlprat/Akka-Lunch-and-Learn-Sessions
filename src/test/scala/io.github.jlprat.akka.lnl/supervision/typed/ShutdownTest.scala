@@ -1,4 +1,4 @@
-package io.github.jlprat.akka.lnl.supervision
+package io.github.jlprat.akka.lnl.supervision.typed
 
 import akka.actor.testkit.typed.scaladsl.{LoggingTestKit, ScalaTestWithActorTestKit}
 import org.scalatest.matchers.should.Matchers

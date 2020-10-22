@@ -1,4 +1,4 @@
-package io.github.jlprat.akka.lnl.supervision
+package io.github.jlprat.akka.lnl.supervision.typed
 
 import akka.actor.testkit.typed.CapturedLogEvent
 import akka.actor.testkit.typed.Effect.Watched

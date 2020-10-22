@@ -1,4 +1,4 @@
-package io.github.jlprat.akka.lnl.supervision
+package io.github.jlprat.akka.lnl.supervision.typed
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.flatspec.AnyFlatSpecLike
