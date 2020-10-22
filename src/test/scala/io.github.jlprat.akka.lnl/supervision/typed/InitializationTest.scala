@@ -15,7 +15,7 @@ import io.github.jlprat.akka.lnl.supervision.typed.Initialization
 import io.github.jlprat.akka.lnl.supervision.typed.Initialization.Init
 
 import io.github.jlprat.akka.lnl.supervision.typed.Restart
-import io.github.jlprat.akka.lnl.supervision.typed.Restart.{Boom, ChildCommand, DoThings}
+import io.github.jlprat.akka.lnl.supervision.typed.Restart.{Boom, ChildCommand}
 
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
@@ -64,16 +64,19 @@ class InitializationTest extends ScalaTestWithActorTestKit with AnyFlatSpecLike 
   }
 
   "Restart Example variant 1 async" should "start child only on start and not on restart" in {
-    val childOnStart = testKit.spawn(Restart.apply())
-    LoggingTestKit.info("creating child").withOccurrences(0).expect {
+    LoggingTestKit.info("creating child").withOccurrences(1).expect {
+      // putting the 2 action under the expectation as log messages might be fired a little late
+      // and be picked as if they would be a consequence of the "Boom" message
+      val childOnStart = testKit.spawn(Restart.apply())
       childOnStart.tell(Boom)
     }
-    childOnStart.tell(DoThings)
   }
 
   "Restart Example variant 2 async" should "start child on start and restart" in {
-    val childOnStart = testKit.spawn(Restart.recreateChildOnRestart())
-    LoggingTestKit.info("creating child").expect {
+    LoggingTestKit.info("creating child").withOccurrences(2).expect {
+      // putting the 2 action under the expectation as log messages might be fired a little late
+      // and be picked as if they would be a consequence of the "Boom" message
+      val childOnStart = testKit.spawn(Restart.recreateChildOnRestart())
       childOnStart.tell(Boom)
     }
 
