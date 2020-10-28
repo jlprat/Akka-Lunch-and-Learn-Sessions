@@ -65,12 +65,12 @@
 				</ul>
 				</p>
 			</section>
-			<section>
+			<!-- <section>
 				<h3>What is the Actor Lifecycle?</h3>
 				<p>
 					Notice that the hooking capabilities vary in Akka Typed and Akka Classic.
 				</p>
-			</section>
+			</section> -->
 			<section>
 				<h3>What is the Actor Lifecycle?</h3>
 				<p>
@@ -81,7 +81,7 @@
 			<section>
 				<h3>What is the Actor Lifecycle?</h3>
 				<p>
-					Meanwhile, Akka Actors uses a combination of signals (<code>PreRestart</code> and <code>PostStop</code>) and
+					Akka Typed uses a combination of signals (<code>PreRestart</code> and <code>PostStop</code>) and
 					code inside <code>Behaviors.setup</code>.
 				</p>
 			</section>
@@ -95,13 +95,13 @@
 				</ul>
 				</p>
 			</section>
-			<section>
+			<!-- <section>
 				<h3>What is the Actor Lifecycle?</h3>
 				<p>
-					Actors can monitor their children lifecycle and decide the course of action in case of failures. This is
+					Actors can monitor their children's lifecycle and decide the course of action in case of failures. This is
 					called supervision.
 				</p>
-			</section>
+			</section> -->
 			<section>
 				<h3>How to supervise Actors?</h3>
 				<p>
@@ -408,7 +408,7 @@ object Initialization {
 			</section>
 			<section>
 				<h3>How to deal with Restarts in Actors? - Akka Typed</h3>
-				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|5-17|7-15|10-15">object Restart {
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|5-17|7-15|10-15|16">object Restart {
   sealed trait Command
   case object DoThings extends Command
 
@@ -437,7 +437,7 @@ object Initialization {
 			</section>
 			<section>
 				<h3>How to gracefully finish tasks in Actors? - Akka Classic</h3>
-				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|21-27|23-26|29-31">import akka.actor.{Actor, ActorLogging, Props}
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|6-8|21-27|23-26|29-31">import akka.actor.{Actor, ActorLogging, Props}
 import io.github.jlprat.akka.lnl.supervision.classic.Shutdown._
 
 object Shutdown {
