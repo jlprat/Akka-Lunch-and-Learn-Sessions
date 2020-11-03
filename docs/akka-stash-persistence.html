@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>Stashing and Persisting Akka</title>
+
+	<link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+
+	<link rel="stylesheet" href="dist/reset.css">
+	<link rel="stylesheet" href="dist/reveal.css">
+	<link rel="stylesheet" href="dist/theme/beige.css" id="theme">
+
+	<!-- Theme used for syntax highlighted code -->
+	<link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<a href="https://akka.io"><img src="images/akka-reverse-large.png" alt="Akka Logo"
+						style="background-color: #15a9ce;"></a>
+				<h2>Stashing and Persisting Akka</h2>
+				<p>
+					<small>Josep Prat &nbsp;<a href="https://github.com/jlprat"><img src="images/GitHub-Mark-32px.png"
+								alt="GitHub Logo" style="margin: 0"></a>&nbsp;- 2020/11/xx </small>
+				</p>
+			</section>
+			<section>
+				<h3>Link to the companion Repo</h3>
+				<p>
+					<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/"><img src="images/akka-lunch-learn.svg"
+							alt="QR code for the repository"></a>
+				</p>
+			</section>
+			<section>
+				<h3>Questions:</h3>
+				<ul>
+					<li>How to keep messages on initialization?</li>
+					<li>How to keep messages while performing costly operation?</li>
+					<li>How to avoid unstash unresponsiveness?</li>
+					<li>What is Akka Persistence about?</li>
+					<li>How to build an Event Sourced App?</li>
+					<li>Why should we save Snapshots?</li>
+				</ul>
+			</section>
+			<section>
+				<h3>How to keep messages on initialization?</h3>
+				<p>We are familiar with this initialization pattern:</p>
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|18-27|23-26">import akka.actor.typed.{ActorRef, Behavior}
+import akka.actor.typed.scaladsl.Behaviors
+
+object DropBeforeInit {
+
+  sealed trait Status
+  case class Done(primes: List[Int]) extends Status
+  case object Processing             extends Status
+  case object Discarded              extends Status
+
+  sealed trait Command
+  case object Initialize                                            extends Command
+  case class Primes(numberOfPrimes: Int, replyTo: ActorRef[Status]) extends Command
+
+  def primeStream(s: LazyList[Int]): LazyList[Int] =
+    LazyList.cons(s.head, primeStream(s.tail filter { _ % s.head != 0 }))
+
+  def apply(): Behavior[Command] =
+    Behaviors.receive {
+      case (context, Initialize) =>
+        context.log.info("Initializing - doing some costly things")
+        initialized()
+      case (context, Primes(numberOfPrimes, replyTo)) =>
+        context.log.error("Request to calculate {} primes was discarded", numberOfPrimes)
+        replyTo.tell(Discarded)
+        Behaviors.same
+    }
+
+  def initialized(): Behavior[Command] =
+    Behaviors.receiveMessage {
+      case Primes(numberOfPrimes, replyTo) =>
+        replyTo.tell(Processing)
+        val nPrimes = primeStream(LazyList.from(2)).take(numberOfPrimes)
+        replyTo.tell(Done(nPrimes.toList))
+        Behaviors.same
+      case Initialize => throw new IllegalStateException("Already initialized")
+    }
+}</code></pre>
+			</section>
+			<section>
+				<h3>Thanks! And leave feedback!</h3>
+				<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
+					target="_blank">Write Feedback!</a>
+				<p>
+					<small>Josep Prat &nbsp;<a href="https://github.com/jlprat"><img src="images/GitHub-Mark-32px.png"
+								alt="GitHub Logo" style="margin: 0"></a>&nbsp;- 2020/11/xx </small>
+				</p>
+			</section>
+		</div>
+	</div>
+
+	<script src="dist/reveal.js"></script>
+	<script src="plugin/notes/notes.js"></script>
+	<script src="plugin/markdown/markdown.js"></script>
+	<script src="plugin/highlight/highlight.js"></script>
+	<script src="plugin/zoom/zoom.js"></script>
+	<script src="plugin/highlight/highlight.js"></script>
+
+	<script>
+		// More info about initialization & config:
+		// - https://revealjs.com/initialization/
+		// - https://revealjs.com/config/
+		Reveal.initialize({
+			hash: true,
+			controls: true,
+			progress: true,
+			showSlideNumber: 'all',
+			center: true,
+			transition: 'convex', // none/fade/slide/convex/concave/zoom
+			// Learn about plugins: https://revealjs.com/plugins/
+			plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom, RevealHighlight]
+		});
+	</script>
+</body>
+
+</html>
