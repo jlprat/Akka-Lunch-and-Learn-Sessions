@@ -2,55 +2,60 @@
 <html>
 
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-	<title>Stashing and Persisting Akka</title>
+  <title>Stashing and Persisting Akka</title>
 
-	<link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+  <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
 
-	<link rel="stylesheet" href="dist/reset.css">
-	<link rel="stylesheet" href="dist/reveal.css">
-	<link rel="stylesheet" href="dist/theme/beige.css" id="theme">
+  <link rel="stylesheet" href="dist/reset.css">
+  <link rel="stylesheet" href="dist/reveal.css">
+  <link rel="stylesheet" href="dist/theme/beige.css" id="theme">
 
-	<!-- Theme used for syntax highlighted code -->
-	<link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
+  <!-- Theme used for syntax highlighted code -->
+  <link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
+  <style type="text/css">
+    .reveal code:not(.hljs){
+      color: gray;
+    }
+  </style>
 </head>
 
 <body>
-	<div class="reveal">
-		<div class="slides">
-			<section>
-				<a href="https://akka.io"><img src="images/akka-reverse-large.png" alt="Akka Logo"
-						style="background-color: #15a9ce;"></a>
-				<h2>Stashing and Persisting Akka</h2>
-				<p>
-					<small>Josep Prat &nbsp;<a href="https://github.com/jlprat"><img src="images/GitHub-Mark-32px.png"
-								alt="GitHub Logo" style="margin: 0"></a>&nbsp;- 2020/11/xx </small>
-				</p>
-			</section>
-			<section>
-				<h3>Link to the companion Repo</h3>
-				<p>
-					<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/"><img src="images/akka-lunch-learn.svg"
-							alt="QR code for the repository"></a>
-				</p>
-			</section>
-			<section>
-				<h3>Questions:</h3>
-				<ul>
-					<li>How to keep messages on initialization?</li>
-					<li>How to keep messages while performing costly operation?</li>
-					<li>How to avoid unstash unresponsiveness?</li>
-					<li>What is Akka Persistence about?</li>
-					<li>How to build an Event Sourced App?</li>
-					<li>Why should we save Snapshots?</li>
-				</ul>
-			</section>
-			<section>
-				<h3>How to keep messages on initialization?</h3>
-				<p>We are familiar with this initialization pattern:</p>
-				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|18-27|23-26">import akka.actor.typed.{ActorRef, Behavior}
+  <div class="reveal">
+    <div class="slides">
+      <section>
+        <a href="https://akka.io"><img src="images/akka-reverse-large.png" alt="Akka Logo"
+            style="background-color: #15a9ce;"></a>
+        <h2>Stashing and Persisting Akka</h2>
+        <p>
+          <small>Josep Prat &nbsp;<a href="https://github.com/jlprat"><img src="images/GitHub-Mark-32px.png"
+                alt="GitHub Logo" style="margin: 0"></a>&nbsp;- 2020/11/xx </small>
+        </p>
+      </section>
+      <section>
+        <h3>Link to the companion Repo</h3>
+        <p>
+          <a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/"><img src="images/akka-lunch-learn.svg"
+              alt="QR code for the repository"></a>
+        </p>
+      </section>
+      <section>
+        <h3>Questions:</h3>
+        <ul>
+          <li>How to keep messages on initialization?</li>
+          <li>How to avoid unstash unresponsiveness?</li>
+          <li>How to keep messages while performing costly operation?</li>
+          <li>What is Akka Persistence about?</li>
+          <li>How to build an Event Sourced App?</li>
+          <li>Why should we save Snapshots?</li>
+        </ul>
+      </section>
+      <section>
+        <h3>How to keep messages on initialization?</h3>
+        <p>We are familiar with this initialization pattern:</p>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|18-27|23-26">import akka.actor.typed.{ActorRef, Behavior}
 import akka.actor.typed.scaladsl.Behaviors
 
 object DropBeforeInit {
@@ -88,14 +93,15 @@ object DropBeforeInit {
       case Initialize => throw new IllegalStateException("Already initialized")
     }
 }</code></pre>
-			</section>
-			<section>
-				<h3>How to keep messages on initialization?</h3>
-				<p>What if we would like to keep all those discarded messages? In the end, it's not the client's fault that we weren't initialized yet!</p>
-			</section>
-			<section>
-				<h3>How to keep messages on initialization? - Akka Classic</h3>
-				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|28-30|24-27|36-41">import akka.actor.{Actor, ActorLogging, Props, Stash}
+      </section>
+      <section>
+        <h3>How to keep messages on initialization?</h3>
+        <p>What if we would like to keep all those discarded messages? In the end, it's not the client's fault that we
+          weren't initialized yet!</p>
+      </section>
+      <section>
+        <h3>How to keep messages on initialization? - Akka Classic</h3>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|28-30|24-27|36-41">import akka.actor.{Actor, ActorLogging, Props, Stash}
 import io.github.jlprat.akka.lnl.stash.classic.StashBeforeInit._
 
 object StashBeforeInit {
@@ -138,10 +144,20 @@ class StashBeforeInit extends Actor with Stash with ActorLogging {
       sender() ! Done(nPrimes.toList)
   }
 }</code></pre>
-			</section>
-			<section>
-				<h3>How to keep messages on initialization? - Akka Classic</h3>
-				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|18-28|23-26|20-22|32-38">import akka.actor.typed.{ActorRef, Behavior}
+      </section>
+      <section>
+        <h3>How to keep messages on initialization? - Akka Classic</h3>
+        <p>The size of the <code>Stash</code> is determined by the <code>stash-capacity</code> setting of the mailbox’s
+          configuration.</p>
+      </section>
+      <section>
+        <h3>How to keep messages on initialization? - Akka Classic</h3>
+        <p>Be aware that the <code>Stash</code> trait should be mixed in before any other trait that overrides the <code>preStart</code> hook.</p>
+        <p>Also, <code>Stash</code> only works with <em>dequed</em> (Double Ended Queue) mailboxes.</p>
+      </section>
+      <section>
+        <h3>How to keep messages on initialization? - Akka Typed</h3>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|18-28|23-26|20-22|32-38">import akka.actor.typed.{ActorRef, Behavior}
 import akka.actor.typed.scaladsl.Behaviors
 
 object StashBeforeInit {
@@ -182,41 +198,59 @@ object StashBeforeInit {
       case Initialize => throw new IllegalStateException("Already initialized")
     }
 }</code></pre>
-			</section>
-			<section>
-				<h3>Thanks! And leave feedback!</h3>
-				<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
-					target="_blank">Write Feedback!</a>
-				<p>
-					<small>Josep Prat &nbsp;<a href="https://github.com/jlprat"><img src="images/GitHub-Mark-32px.png"
-								alt="GitHub Logo" style="margin: 0"></a>&nbsp;- 2020/11/xx </small>
-				</p>
-			</section>
-		</div>
-	</div>
+      </section>
+      <section>
+        <h3>How to avoid unstash unresponsiveness?</h3>
+        <p>What might happen if we stashed 300 messages, and each message takes 200ms. to process?</p>
+        <p>This means that for 1 full minute we won't be able to process any new incoming message, leaving the 
+          clients wondering if the app is responding at all.</p>
+        <p>What can we do?</p>
+      </section>
+      <section>
+        <h3>How to avoid unstash unresponsiveness?</h3>
+        <p>If you use Akka Classic you are unlucky. The only thing one could do is to configure the stash size to be small,
+          so the time unstashing remains manageable.</p>
+      </section>
+      <h3>How to avoid unstash unresponsiveness?</h3>
+        <p>If you use Akka Typed though, you are lucky!</p>
+        <p>Instead of unstashing all messages, one can unstash in smaller chunks, so incoming messages can be
+          processed between batches.</p>
+      </section>
+      
+      <section>
+        <h3>Thanks! And leave feedback!</h3>
+        <a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
+          target="_blank">Write Feedback!</a>
+        <p>
+          <small>Josep Prat &nbsp;<a href="https://github.com/jlprat"><img src="images/GitHub-Mark-32px.png"
+                alt="GitHub Logo" style="margin: 0"></a>&nbsp;- 2020/11/xx </small>
+        </p>
+      </section>
+    </div>
+  </div>
 
-	<script src="dist/reveal.js"></script>
-	<script src="plugin/notes/notes.js"></script>
-	<script src="plugin/markdown/markdown.js"></script>
-	<script src="plugin/highlight/highlight.js"></script>
-	<script src="plugin/zoom/zoom.js"></script>
-	<script src="plugin/highlight/highlight.js"></script>
+  <script src="dist/reveal.js"></script>
+  <script src="plugin/notes/notes.js"></script>
+  <script src="plugin/markdown/markdown.js"></script>
+  <script src="plugin/highlight/highlight.js"></script>
+  <script src="plugin/zoom/zoom.js"></script>
+  <script src="plugin/highlight/highlight.js"></script>
 
-	<script>
-		// More info about initialization & config:
-		// - https://revealjs.com/initialization/
-		// - https://revealjs.com/config/
-		Reveal.initialize({
-			hash: true,
-			controls: true,
-			progress: true,
-			showSlideNumber: 'all',
-			center: true,
-			transition: 'convex', // none/fade/slide/convex/concave/zoom
-			// Learn about plugins: https://revealjs.com/plugins/
-			plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom, RevealHighlight]
-		});
-	</script>
+  <script>
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.initialize({
+      hash: true,
+      controls: true,
+      progress: true,
+      showSlideNumber: 'all',
+      center: true,
+      transition: 'convex', // none/fade/slide/convex/concave/zoom
+      // Learn about plugins: https://revealjs.com/plugins/
+      plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom, RevealHighlight]
+    });
+  </script>
 </body>
 
 </html>
