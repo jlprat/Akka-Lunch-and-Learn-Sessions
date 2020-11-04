@@ -16,6 +16,7 @@ class Shutdown extends Actor with ActorLogging {
 
   override def receive: Actor.Receive = {
     case Init => spawnChildren()
+      context.become(initialized)
     case GracefulShutdown =>
       log.error("I'm not yet initialized!")
   }
