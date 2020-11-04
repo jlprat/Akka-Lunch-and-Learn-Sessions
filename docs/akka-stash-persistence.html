@@ -90,6 +90,100 @@ object DropBeforeInit {
 }</code></pre>
 			</section>
 			<section>
+				<h3>How to keep messages on initialization?</h3>
+				<p>What if we would like to keep all those discarded messages? In the end, it's not the client's fault that we weren't initialized yet!</p>
+			</section>
+			<section>
+				<h3>How to keep messages on initialization? - Akka Classic</h3>
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|28-30|24-27|36-41">import akka.actor.{Actor, ActorLogging, Props, Stash}
+import io.github.jlprat.akka.lnl.stash.classic.StashBeforeInit._
+
+object StashBeforeInit {
+
+  sealed trait Status
+  case class Done(primes: List[Int]) extends Status
+  case object Processing             extends Status
+
+  sealed trait Command
+  case object Initialize                 extends Command
+  case class Primes(numberOfPrimes: Int) extends Command
+
+  def props(): Props = Props(classOf[StashBeforeInit])
+
+  private def primeStream(s: LazyList[Int]): LazyList[Int] =
+    LazyList.cons(s.head, primeStream(s.tail filter { _ % s.head != 0 }))
+
+}
+
+class StashBeforeInit extends Actor with Stash with ActorLogging {
+
+  override def receive: Actor.Receive = {
+    case Initialize =>
+      log.info("Initializing - doing some costly things")
+      unstashAll()
+      context.become(initialized)
+    case Primes(numberOfPrimes) => 
+      log.info("Stashing request to calculate {} number of primes", numberOfPrimes)
+      stash()
+  }
+
+  def initialized: Actor.Receive = {
+    case Initialize =>
+      throw new IllegalStateException("Already initialized")
+    case Primes(numberOfPrimes) =>
+      sender() ! Processing
+      // We could store this already calculated primes in a field,
+      // but for the sake of performing something costly, we calculate it every time
+      val nPrimes = primeStream(LazyList.from(2)).take(numberOfPrimes)
+      sender() ! Done(nPrimes.toList)
+  }
+}</code></pre>
+			</section>
+			<section>
+				<h3>How to keep messages on initialization? - Akka Classic</h3>
+				<pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|18-28|23-26|20-22|32-38">import akka.actor.typed.{ActorRef, Behavior}
+import akka.actor.typed.scaladsl.Behaviors
+
+object StashBeforeInit {
+
+  sealed trait Status
+  case class Done(primes: List[Int]) extends Status
+  case object Processing             extends Status
+
+  sealed trait Command
+  case object Initialize                                            extends Command
+  case class Primes(numberOfPrimes: Int, replyTo: ActorRef[Status]) extends Command
+
+  def primeStream(s: LazyList[Int]): LazyList[Int] =
+    LazyList.cons(s.head, primeStream(s.tail filter { _ % s.head != 0 }))
+
+  def apply(): Behavior[Command] =
+    Behaviors.withStash(25) { stashBuffer =>
+      Behaviors.receive {
+        case (context, Initialize) =>
+          context.log.info("Initializing - doing some costly things")
+          stashBuffer.unstashAll(initialized())
+        case (context, msg @ Primes(numberOfPrimes, _)) =>
+          context.log.info("Stashing request to calculate {} number of primes", numberOfPrimes)
+          stashBuffer.stash(msg)
+          Behaviors.same
+      }
+    }
+
+  def initialized(): Behavior[Command] =
+    Behaviors.receiveMessage {
+      case Primes(numberOfPrimes, replyTo) =>
+        replyTo.tell(Processing)
+        // We could store this already calculated primes in a field,
+        // but for the sake of performing something costly, we calculate it every time
+        val nPrimes = primeStream(LazyList.from(2)).take(numberOfPrimes)
+        replyTo.tell(Done(nPrimes.toList))
+        Behaviors.same
+      case Initialize => throw new IllegalStateException("Already initialized")
+    }
+}</code></pre>
+			</section>
+			<section>
 				<h3>Thanks! And leave feedback!</h3>
 				<a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
 					target="_blank">Write Feedback!</a>
