@@ -16,7 +16,7 @@
   <!-- Theme used for syntax highlighted code -->
   <link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
   <style type="text/css">
-    .reveal code:not(.hljs){
+    .reveal code:not(.hljs) {
       color: gray;
     }
   </style>
@@ -152,7 +152,8 @@ class StashBeforeInit extends Actor with Stash with ActorLogging {
       </section>
       <section>
         <h3>How to keep messages on initialization? - Akka Classic</h3>
-        <p>Be aware that the <code>Stash</code> trait should be mixed in before any other trait that overrides the <code>preStart</code> hook.</p>
+        <p>Be aware that the <code>Stash</code> trait should be mixed in before any other trait that overrides the
+          <code>preStart</code> hook.</p>
         <p>Also, <code>Stash</code> only works with <em>dequed</em> (Double Ended Queue) mailboxes.</p>
       </section>
       <section>
@@ -200,23 +201,117 @@ object StashBeforeInit {
 }</code></pre>
       </section>
       <section>
+        <h3>How to keep messages on initialization?</h3>
+        <p>When unstashing, messages are prepended to the mailbox. This means that after calling <code>unstash</code>,
+          the given actor will process first the unstashed messages and then, any other messages in the mailbox.</p>
+      </section>
+      <section>
         <h3>How to avoid unstash unresponsiveness?</h3>
         <p>What might happen if we stashed 300 messages, and each message takes 200ms. to process?</p>
-        <p>This means that for 1 full minute we won't be able to process any new incoming message, leaving the 
+        <p>This means that for 1 full minute we won't be able to process any new incoming message, leaving the
           clients wondering if the app is responding at all.</p>
         <p>What can we do?</p>
       </section>
       <section>
         <h3>How to avoid unstash unresponsiveness?</h3>
-        <p>If you use Akka Classic you are unlucky. The only thing one could do is to configure the stash size to be small,
-          so the time unstashing remains manageable.</p>
+        <p>If you use Akka Classic you are unlucky. The only thing one could do is to configure the stash size to be
+          small, so the time unstashing remains manageable.</p>
       </section>
-      <h3>How to avoid unstash unresponsiveness?</h3>
+      <section>
+        <h3>How to avoid unstash unresponsiveness?</h3>
         <p>If you use Akka Typed though, you are lucky!</p>
         <p>Instead of unstashing all messages, one can unstash in smaller chunks, so incoming messages can be
           processed between batches.</p>
       </section>
-      
+      <section>
+        <h3>How to avoid unstash unresponsiveness?</h3>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|13-17|16-17|26-33|29-30|43-52|44,49|54-61">import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
+import akka.actor.typed.scaladsl.Behaviors
+import akka.actor.typed.scaladsl.AskPattern._
+import akka.util.Timeout
+
+import scala.concurrent.duration._
+import scala.io.StdIn
+
+object ChunkedUnstash {
+
+  case class Done(primes: List[Int])
+
+  sealed trait Command
+  case object Initialize                                          extends Command
+  case class Primes(numberOfPrimes: Int, replyTo: ActorRef[Done]) extends Command
+  private case object ResumeUnstash                               extends Command
+  private case class Stashed(msg: Command)                        extends Command
+
+  def primeStream(s: LazyList[Int]): LazyList[Int] =
+    LazyList.cons(s.head, primeStream(s.tail filter { _ % s.head != 0 }))
+
+  def apply(): Behavior[Command] =
+    Behaviors.withStash(300) { stashBuffer =>
+      def uninitialized(): Behavior[Command] =
+        Behaviors.receive {
+          case (context, Initialize) =>
+            context.log.info("Initializing - doing some costly things")
+            if (stashBuffer.size > 0) {
+              context.self.tell(ResumeUnstash)
+              stashBuffer.unstash(initialized(), 5, Stashed)
+            } else {
+              initialized()
+            }
+          case (context, msg @ Primes(numberOfPrimes, _)) =>
+            context.log.info("Stashing request to calculate {} primes", numberOfPrimes)
+            stashBuffer.stash(msg)
+            Behaviors.same
+          case _ => Behaviors.unhandled
+        }
+
+      def initialized(): Behavior[Command] =
+        Behaviors.receive {
+          case (context, Stashed(Primes(numberOfPrimes, replyTo))) =>
+            context.log.info("Processing a previously stashed message")
+            val nPrimes = primeStream(LazyList.from(2)).take(numberOfPrimes)
+            replyTo.tell(Done(nPrimes.toList))
+            Behaviors.same
+          case (context, Primes(numberOfPrimes, replyTo)) =>
+            context.log.info("Processing a fresh new message")
+            val nPrimes = primeStream(LazyList.from(2)).take(numberOfPrimes)
+            replyTo.tell(Done(nPrimes.toList))
+            Behaviors.same
+          case (context, ResumeUnstash) =>
+            if (stashBuffer.size > 0) {
+              context.log.info("Finished one batch of unstashing")
+              context.self.tell(ResumeUnstash)
+              stashBuffer.unstash(initialized(), 5, Stashed)
+            } else {
+              context.log.info("Finished Unstashing")
+              Behaviors.same
+            }
+          case (context, Stashed(msg)) =>
+            context.log.error("Wrong message in stash {}", msg)
+            throw new IllegalStateException("Wrong message in stash")
+          case (_, Initialize) => throw new IllegalStateException("Already initialized")
+        }
+
+      uninitialized()
+    }
+}</code></pre>
+      </section>
+      <section>
+        <h3>How to avoid unstash unresponsiveness?</h3>
+        <p>Go and run <a
+            href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/blob/master/src/main/scala/io.github.jlprat.akka.lnl/stash/typed/ChunkedUnstash.scala"><code>ChunkedUnstash</code></a>.
+        </p>
+        <p>Logs should show that messages received while unstashing are not processed last.p>
+      </section>
+      <section>
+        <h3>How to keep messages while performing costly operation?</h3>
+        <p>Use case: we have some costly writes. While writes are not correctly persisted, we should not process any
+          read.</p>
+      </section>
+      <section>
+        <h3>How to keep messages while performing costly operation?</h3>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|13-17|16-17|26-33|29-30|43-52|44,49|54-61"></code></pre>
+      </section>
       <section>
         <h3>Thanks! And leave feedback!</h3>
         <a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
