@@ -377,6 +377,81 @@ object FaultyKeyValueStore {
         <p>Additionally, there is a race while updating the same key.</p>
       </section>
       <section>
+        <h3>How to keep messages while performing costly operation?</h3>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|11-13,20|15-17,21|23-26|43-47|33-42|42|54-67|55|63-65|57-59|60-62">import akka.actor.typed.{ActorRef, Behavior, DispatcherSelector}
+import akka.actor.typed.scaladsl.Behaviors
+import akka.Done
+
+import scala.concurrent.{blocking, ExecutionContext, Future}
+import scala.util.{Failure, Success}
+import scala.annotation.nowarn
+
+object TransactionalKeyValueStore {
+
+  sealed trait PutResponse
+  case class Stored(key: String) extends PutResponse
+  case class Failed(key: String) extends PutResponse
+
+  sealed trait GetResponse
+  case class Retrieved(value: String) extends GetResponse
+  case class Missing(key: String)     extends GetResponse
+
+  sealed trait Command
+  case class Put(key: String, value: String, replyTo: ActorRef[PutResponse]) extends Command
+  case class Get(key: String, replyTo: ActorRef[GetResponse])                extends Command
+
+  private case class KeyValueStored(key: String, value: String, replyTo: ActorRef[PutResponse])
+      extends Command
+  private case class KeyValueFailed(key: String, value: String, replyTo: ActorRef[PutResponse])
+      extends Command
+
+  def apply(storage: Map[String, String] = Map.empty): Behavior[Command] =
+    Behaviors.setup { context =>
+      implicit val ec: ExecutionContext =
+        context.system.dispatchers.lookup(DispatcherSelector.blocking())
+      Behaviors.receiveMessage {
+        case Put(key, value, replyTo) =>
+          val saved = saveToDatabase(key, value)
+          context.pipeToSelf(saved) {
+            case Failure(exception) =>
+              context.log.error("Error Saving to DB", exception)
+              KeyValueFailed(key, value, replyTo)
+            case Success(_) =>
+              KeyValueStored(key, value, replyTo)
+          }
+          saving(storage)
+        case Get(key, replyTo) =>
+          replyTo.tell(
+            storage.get(key).map(Retrieved).getOrElse(Missing(key))
+          )
+          Behaviors.same
+        case msg =>
+          context.log.error("Received wrong message {}", msg)
+          Behaviors.unhandled
+      }
+    }
+
+  def saving(storage: Map[String, String]): Behavior[Command] =
+    Behaviors.withStash(30) { buffer =>
+      Behaviors.receiveMessage {
+        case KeyValueFailed(key, _, replyTo) =>
+          replyTo.tell(Failed(key))
+          buffer.unstashAll(apply())
+        case KeyValueStored(key, value, replyTo) =>
+          replyTo.tell(Stored(key))
+          buffer.unstashAll(apply(storage + (key -> value)))
+        case msg =>
+          buffer.stash(msg)
+          Behaviors.same
+      }
+    }
+
+  @nowarn
+  def saveToDatabase(key: String, value: String)(implicit ec: ExecutionContext): Future[Done] =
+    Future {...}
+}</code></pre>
+      </section>
+      <section>
         <h3>Thanks! And leave feedback!</h3>
         <a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
           target="_blank">Write Feedback!</a>
