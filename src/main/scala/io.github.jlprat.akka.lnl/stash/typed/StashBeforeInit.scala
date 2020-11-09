@@ -23,7 +23,7 @@ object StashBeforeInit {
           context.log.info("Initializing - doing some costly things")
           stashBuffer.unstashAll(initialized())
         case (context, msg @ Primes(numberOfPrimes, _)) =>
-          context.log.info("Stashing request to calculate {} number of primes", numberOfPrimes)
+          context.log.info("Stashing request to calculate {} primes", numberOfPrimes)
           stashBuffer.stash(msg)
           Behaviors.same
       }
