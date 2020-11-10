@@ -3,12 +3,11 @@ package io.github.jlprat.akka.lnl.persistence.typed
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
+import com.typesafe.config.ConfigFactory
 import io.github.jlprat.akka.lnl.persistence.typed.PersistentKeyValueStore._
 
 class PersistentKeyValueStoreTest
-    extends ScalaTestWithActorTestKit("""
-      akka.persistence.journal.plugin = "akka.persistence.journal.inmem"
-    """)
+    extends ScalaTestWithActorTestKit(ConfigFactory.defaultApplication())
     with AnyFlatSpecLike
     with Matchers {
 

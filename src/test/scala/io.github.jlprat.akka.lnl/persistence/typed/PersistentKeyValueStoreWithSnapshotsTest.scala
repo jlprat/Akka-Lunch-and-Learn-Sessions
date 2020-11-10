@@ -1,19 +1,22 @@
 package io.github.jlprat.akka.lnl.persistence.typed
 
-import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
+import akka.actor.testkit.typed.scaladsl.{LoggingTestKit, ScalaTestWithActorTestKit}
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
+import com.typesafe.config.ConfigFactory
+
 import io.github.jlprat.akka.lnl.persistence.typed.PersistentKeyValueStoreWithSnapshots._
+
 import java.{util => ju}
-import akka.actor.testkit.typed.scaladsl.LoggingTestKit
 
 class PersistentKeyValueStoreWithSnapshotsTest
-    extends ScalaTestWithActorTestKit(s"""
-      akka.actor.allow-java-serialization = "true"
-      akka.persistence.journal.plugin = "akka.persistence.journal.inmem"
-      akka.persistence.snapshot-store.plugin = "akka.persistence.snapshot-store.local"
-      akka.persistence.snapshot-store.local.dir = "target/snapshot-${ju.UUID.randomUUID().toString}"
-    """)
+    extends ScalaTestWithActorTestKit(
+      ConfigFactory
+        .parseString(s"""akka.persistence.snapshot-store.local.dir = "target/snapshot-${ju.UUID
+          .randomUUID()
+          .toString}"""")
+        .withFallback(ConfigFactory.defaultApplication())
+    )
     with AnyFlatSpecLike
     with Matchers {
 

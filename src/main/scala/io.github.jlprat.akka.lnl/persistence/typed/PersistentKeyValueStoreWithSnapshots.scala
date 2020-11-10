@@ -35,7 +35,7 @@ object PersistentKeyValueStoreWithSnapshots {
       eventHandler = handleEvent
     )
       //.snapshotWhen((_, _, sequenceNumber) => sequenceNumber % 100 == 0) // these both are equivalent on triggering conditions
-      .withRetention(RetentionCriteria.snapshotEvery(numberOfEvents = 99, keepNSnapshots = 2))
+      .withRetention(RetentionCriteria.snapshotEvery(numberOfEvents = 100, keepNSnapshots = 2))
 
   def handleCommand(state: State, command: Command): Effect[Event, State] =
     command match {

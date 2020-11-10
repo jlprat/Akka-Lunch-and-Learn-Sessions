@@ -604,7 +604,7 @@ object PersistentKeyValueStoreWithSnapshots {
       eventHandler = handleEvent
     )
       //.snapshotWhen((state, event, sequenceNumber) => sequenceNumber % 100 == 0)
-      .withRetention(RetentionCriteria.snapshotEvery(numberOfEvents = 99,
+      .withRetention(RetentionCriteria.snapshotEvery(numberOfEvents = 100,
         keepNSnapshots = 2))
 
   def handleCommand(state: State, command: Command): Effect[Event, State] =
@@ -635,6 +635,24 @@ object PersistentKeyValueStoreWithSnapshots {
         <p>Pick the right serialization method and do not use Java Serialization, it's slow and buggy.</p>
       </section>
       <section>
+        <h3>Why should we save Snapshots?</h3>
+        <p>Test config for in-memory storage</p>
+        <pre><code data-trim class="yaml">akka {
+  actor {
+    serialization-bindings {
+      "io.github.jlprat.akka.lnl.persistence.typed.CborSerializable" = jackson-cbor
+    }
+  }
+
+  persistence {
+    # inmem only for tests
+    journal.plugin = "akka.persistence.journal.inmem"
+    snapshot-store.plugin = "akka.persistence.snapshot-store.local"
+    snapshot-store.local.dir = "target/snapshot"
+  }
+}</code></pre>
+      </section>
+      <section>
         <h3>Thanks! And leave feedback!</h3>
         <a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
           target="_blank">Write Feedback!</a>
@@ -649,7 +667,6 @@ object PersistentKeyValueStoreWithSnapshots {
   <script src="dist/reveal.js"></script>
   <script src="plugin/notes/notes.js"></script>
   <script src="plugin/markdown/markdown.js"></script>
-  <script src="plugin/highlight/highlight.js"></script>
   <script src="plugin/zoom/zoom.js"></script>
   <script src="plugin/highlight/highlight.js"></script>
 

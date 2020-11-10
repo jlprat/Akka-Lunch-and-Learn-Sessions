@@ -44,14 +44,15 @@ scalacOptions ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor-typed"         % akkaVersion,
-  "com.typesafe.akka" %% "akka-actor"               % akkaVersion,
-  "com.typesafe.akka" %% "akka-persistence-typed"   % akkaVersion,
-  "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % "test",
-  "com.typesafe.akka" %% "akka-testkit"             % akkaVersion % "test",
-  "com.typesafe.akka" %% "akka-persistence-testkit" % akkaVersion % "test",
-  "org.scalatest"     %% "scalatest"                % "3.2.2"     % "test",
-  "ch.qos.logback"     % "logback-classic"          % "1.2.3"
+  "com.typesafe.akka" %% "akka-actor-typed"           % akkaVersion,
+  "com.typesafe.akka" %% "akka-actor"                 % akkaVersion,
+  "com.typesafe.akka" %% "akka-persistence-typed"     % akkaVersion,
+  "com.typesafe.akka" %% "akka-serialization-jackson" % akkaVersion,
+  "com.typesafe.akka" %% "akka-actor-testkit-typed"   % akkaVersion % "test",
+  "com.typesafe.akka" %% "akka-testkit"               % akkaVersion % "test",
+  "com.typesafe.akka" %% "akka-persistence-testkit"   % akkaVersion % "test",
+  "org.scalatest"     %% "scalatest"                  % "3.2.2"     % "test",
+  "ch.qos.logback"     % "logback-classic"            % "1.2.3"
 )
 
 val consoleDisabledOptions = Seq("-Xfatal-warnings", "-Ywarn-unused", "-Ywarn-unused-import")
