@@ -31,8 +31,8 @@ class TransactionalKeyValueStoreTest
     simpleKeyValueStoreBehavior.tell(Put("city", "Berlin", probePut.ref))
     simpleKeyValueStoreBehavior.tell(Get("city", probeGet.ref))
 
-    probePut.expectMessage(Stored("city"))
     probeGet.expectMessage(Retrieved("Berlin"))
+    probePut.expectMessage(Stored("city"))
 
     simpleKeyValueStoreBehavior.tell(Get("city", probeGet.ref))
     probeGet.expectMessage(Retrieved("Berlin"))
