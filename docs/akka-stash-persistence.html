@@ -466,15 +466,173 @@ object TransactionalKeyValueStore {
         <p>It's a great match for applications using Event Sourcing.</p>
       </section>
       <section>
-        <h3>What is Akka Persistence about? - Command vs Event</h3>
+        <h3>How to build an Event Sourced App?</h3>
+        <p>We need to understand the difference between <b>Commands</b> and <b>Events</b>.</p>
         <p><b>Commands</b> are the received messages of an Actor. They are not yet validated nor peristed.</p>
         <p>After successful validation, a Command is converted to an <b>Event</b>, which represents the actions to
-          perform to the Actor's inner state.
+          perform to the Actor's inner <b>State</b>.
         </p>
       </section>
       <section>
-        <h3>What is Akka Persistence about? - Command vs Event</h3>
+        <h3>How to build an Event Sourced App?</h3>
         <p>Only after successfully persisting and Event, the actor is allowed to update their state.</p>
+      </section>
+      <section>
+        <h3>How to build an Event Sourced App?</h3>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|8-18|20-21|23-27|29-35|31|37-52|50-52|43-44|47-48|55-58">import akka.actor.typed.{ActorRef, Behavior}
+import akka.persistence.typed.scaladsl.EventSourcedBehavior
+import akka.persistence.typed.PersistenceId
+import akka.persistence.typed.scaladsl.Effect
+
+object PersistentKeyValueStore {
+
+  sealed trait PutResponse                       extends CborSerializable
+  case class Stored(key: String)                 extends PutResponse
+  case class Failed(key: String, reason: String) extends PutResponse
+
+  sealed trait GetResponse            extends CborSerializable
+  case class Retrieved(value: String) extends GetResponse
+  case class Missing(key: String)     extends GetResponse
+
+  sealed trait Command                                                       extends CborSerializable
+  case class Put(key: String, value: String, replyTo: ActorRef[PutResponse]) extends Command
+  case class Get(key: String, replyTo: ActorRef[GetResponse])                extends Command
+
+  sealed trait Event                                 extends CborSerializable
+  case class KeyValuePut(key: String, value: String) extends Event
+
+  final case class State(storage: Map[String, String]) extends CborSerializable
+
+  object State {
+    val empty = State(Map.empty)
+  }
+
+  def apply(id: String): Behavior[Command] =
+    EventSourcedBehavior[Command, Event, State](
+      persistenceId = PersistenceId("KeyValueStore", id),
+      emptyState = State.empty,
+      commandHandler = handleCommand,
+      eventHandler = handleEvent
+    )
+
+  def handleCommand(state: State, command: Command): Effect[Event, State] =
+    command match {
+      case Put(key, value, replyTo) =>
+        //Let's crate some arbitrary rules for keys and values
+        if (key.length() > 100 || value.length > 500) {
+          // Validation didn't hold, we reply and don't persist this Event
+          replyTo.tell(Failed(key, "Either key or value exceed maximum size"))
+          Effect.none
+        } else {
+          // Validation succeeded, we transform the command to an Event, and we persist it.
+          Effect.persist(KeyValuePut(key, value))
+            .thenReply(replyTo)(_ => Stored(key))
+        }
+      case Get(key, replyTo) =>
+        replyTo.tell(state.storage.get(key).map(Retrieved).getOrElse(Missing(key)))
+        Effect.none
+    }
+
+  def handleEvent(state: State, event: Event): State =
+    event match {
+      case KeyValuePut(key, value) => State(state.storage + (key -> value))
+    }
+}</code></pre>
+      </section>
+      <section>
+        <h3>How to build an Event Sourced App?</h3>
+        <p>A Persistent Actor will automatically stash any incoming Command while persisting any Event.</p>
+        <p>An Actor is automatically restoring their state on startup, if there are any event for the given
+          persistenceID.</p>
+      </section>
+      <section>
+        <h3>Why should we save Snapshots?</h3>
+        <p>What happens if we leave our previous Key-Value-Store running for a 1 day? How will the storage look like?
+        </p>
+        <p>What if updating a previously introduced key is the most common action we have?</p>
+      </section>
+      <section>
+        <h3>Why should we save Snapshots?</h3>
+        <p>A Snapshots consist of the serialized representation of an Actor internal State.</p>
+        <p>If an actor tends to accumulate long Event Logs, it might be worth to generate State Snapthots periodically.
+        </p>
+      </section>
+      <section>
+        <h3>Why should we save Snapshots?</h3>
+        <p>When recovering, a Persistent Actor will first attempt to restore the latest Snapshot, and ten, replay all
+          subsequent events.</p>
+      </section>
+      <section>
+        <h3>Why should we save Snapshots?</h3>
+        <p>You can determine the right periodicity of Snapshot generation according to your business needs and
+          specificities.</p>
+      </section>
+      <section>
+        <h3>Why should we save Snapshots?</h3>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|28-37|35-37">import akka.actor.typed.{ActorRef, Behavior}
+import akka.persistence.typed.scaladsl.{Effect, EventSourcedBehavior, RetentionCriteria}
+import akka.persistence.typed.PersistenceId
+
+object PersistentKeyValueStoreWithSnapshots {
+
+  sealed trait PutResponse                       extends CborSerializable
+  case class Stored(key: String)                 extends PutResponse
+  case class Failed(key: String, reason: String) extends PutResponse
+
+  sealed trait GetResponse            extends CborSerializable
+  case class Retrieved(value: String) extends GetResponse
+  case class Missing(key: String)     extends GetResponse
+
+  sealed trait Command                                                       extends CborSerializable
+  case class Put(key: String, value: String, replyTo: ActorRef[PutResponse]) extends Command
+  case class Get(key: String, replyTo: ActorRef[GetResponse])                extends Command
+
+  sealed trait Event                                 extends CborSerializable
+  case class KeyValuePut(key: String, value: String) extends Event
+
+  final case class State(storage: Map[String, String]) extends CborSerializable
+
+  object State {
+    val empty = State(Map.empty)
+  }
+
+  def apply(id: String): Behavior[Command] =
+    EventSourcedBehavior[Command, Event, State](
+      persistenceId = PersistenceId("KeyValueStore", id),
+      emptyState = State.empty,
+      commandHandler = handleCommand,
+      eventHandler = handleEvent
+    )
+      //.snapshotWhen((state, event, sequenceNumber) => sequenceNumber % 100 == 0)
+      .withRetention(RetentionCriteria.snapshotEvery(numberOfEvents = 99,
+        keepNSnapshots = 2))
+
+  def handleCommand(state: State, command: Command): Effect[Event, State] =
+    command match {
+      case Put(key, value, replyTo) =>
+        //Let's crate some arbitrary rules for keys and values
+        if (key.length() > 100 || value.length > 500) {
+          // Validation didn't hold, we reply and don't persist this Event
+          replyTo.tell(Failed(key, "Either key or value exceed maximum size"))
+          Effect.none
+        } else {
+          // Validation succeeded, we transform the command to an Event, and we persist it.
+          Effect.persist(KeyValuePut(key, value)).thenReply(replyTo)(_ => Stored(key))
+        }
+      case Get(key, replyTo) =>
+        replyTo.tell(state.storage.get(key).map(Retrieved).getOrElse(Missing(key)))
+        Effect.none
+    }
+
+  def handleEvent(state: State, event: Event): State =
+    event match {
+      case KeyValuePut(key, value) => State(state.storage + (key -> value))
+    }
+}</code></pre>
+      </section>
+      <section>
+        <h3>Why should we save Snapshots?</h3>
+        <p>Pick the right serialization method and do not use Java Serialization, it's slow and buggy.</p>
       </section>
       <section>
         <h3>Thanks! And leave feedback!</h3>
