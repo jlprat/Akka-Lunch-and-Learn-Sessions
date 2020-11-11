@@ -47,6 +47,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor-typed"           % akkaVersion,
   "com.typesafe.akka" %% "akka-actor"                 % akkaVersion,
   "com.typesafe.akka" %% "akka-persistence-typed"     % akkaVersion,
+  "com.typesafe.akka" %% "akka-persistence"           % akkaVersion,
   "com.typesafe.akka" %% "akka-serialization-jackson" % akkaVersion,
   "com.typesafe.akka" %% "akka-actor-testkit-typed"   % akkaVersion % "test",
   "com.typesafe.akka" %% "akka-testkit"               % akkaVersion % "test",
