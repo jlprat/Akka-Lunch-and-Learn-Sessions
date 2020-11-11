@@ -43,7 +43,7 @@ class PersistentKeyValueStoreWithSnapshotsTest
     )
   }
 
-  it should "not persist the value if it exceeds the maximum of 100 chars" in {
+  it should "not persist the value if it exceeds the maximum of 500 chars" in {
     val persistentKVS = testKit.spawn(PersistentKeyValueStoreWithSnapshots("kvs-2"))
     val probePut      = testKit.createTestProbe[PutResponse]()
 
@@ -121,10 +121,12 @@ class PersistentKeyValueStoreWithSnapshotsTest
 
     testKit.stop(persistentKVS)
 
-    LoggingTestKit.debug("Replaying events: from: 101").expect {
-      val restartedKVS = testKit.spawn(PersistentKeyValueStoreWithSnapshots("kvs-6"))
-      restartedKVS.tell(Get("city", probeGet.ref))
-      probeGet.expectMessage(Retrieved("Berlin-100"))
+    LoggingTestKit.debug("Snapshot recovered from 100 ").expect {
+      LoggingTestKit.debug("Replaying events: from: 101,").expect {
+        val restartedKVS = testKit.spawn(PersistentKeyValueStoreWithSnapshots("kvs-6"))
+        restartedKVS.tell(Get("city", probeGet.ref))
+        probeGet.expectMessage(Retrieved("Berlin-100"))
+      }
     }
   }
 }
