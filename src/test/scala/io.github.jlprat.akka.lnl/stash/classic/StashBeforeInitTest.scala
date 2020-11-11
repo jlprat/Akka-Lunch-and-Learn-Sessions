@@ -1,14 +1,14 @@
 package io.github.jlprat.akka.lnl.stash.classic
 
+import akka.actor.ActorSystem
+import akka.testkit.EventFilter
+import akka.testkit.ImplicitSender
+import akka.testkit.TestKit
+import com.typesafe.config.ConfigFactory
+import io.github.jlprat.akka.lnl.stash.classic.StashBeforeInit._
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
-import io.github.jlprat.akka.lnl.stash.classic.StashBeforeInit._
-import akka.testkit.{ImplicitSender, TestKit}
-import akka.actor.ActorSystem
-
-import com.typesafe.config.ConfigFactory
-import akka.testkit.EventFilter
 
 class StashBeforeInitTest
     extends TestKit(ActorSystem("testsystem", ConfigFactory.parseString("""

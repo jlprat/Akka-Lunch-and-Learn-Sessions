@@ -1,22 +1,17 @@
 package io.github.jlprat.akka.lnl.supervision.typed
 
-import akka.actor.testkit.typed.scaladsl.{
-  BehaviorTestKit,
-  LoggingTestKit,
-  ScalaTestWithActorTestKit
-}
+import akka.actor.testkit.typed.Effect.Spawned
+import akka.actor.testkit.typed.scaladsl.BehaviorTestKit
+import akka.actor.testkit.typed.scaladsl.LoggingTestKit
+import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
+import io.github.jlprat.akka.lnl.supervision.typed.SupervisionExample.Init
+import io.github.jlprat.akka.lnl.supervision.typed.SupervisionExample.Key
+import io.github.jlprat.akka.lnl.supervision.typed.SupervisionExample.Retrieve
+import io.github.jlprat.akka.lnl.supervision.typed.SupervisionExample.Save
+import io.github.jlprat.akka.lnl.supervision.typed.SupervisionExample.Stored
+import io.github.jlprat.akka.lnl.supervision.typed.SupervisionExample.{Product => MyProduct}
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
-
-import akka.actor.testkit.typed.Effect.Spawned
-import io.github.jlprat.akka.lnl.supervision.typed.SupervisionExample.{
-  Init,
-  Key,
-  Product => MyProduct,
-  Save,
-  Stored,
-  Retrieve
-}
 
 class SupervisionExampleTest extends ScalaTestWithActorTestKit with AnyFlatSpecLike with Matchers {
 

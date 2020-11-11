@@ -1,7 +1,9 @@
 package io.github.jlprat.akka.lnl.intro.classic
 
-import akka.actor.{Actor, Props}
-import io.github.jlprat.akka.lnl.intro.classic.MiniExampleBecome.{Click, RetrieveClicks}
+import akka.actor.Actor
+import akka.actor.Props
+import io.github.jlprat.akka.lnl.intro.classic.MiniExampleBecome.Click
+import io.github.jlprat.akka.lnl.intro.classic.MiniExampleBecome.RetrieveClicks
 
 object MiniExampleBecome {
   sealed trait Command

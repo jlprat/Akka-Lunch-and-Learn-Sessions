@@ -1,6 +1,7 @@
 package io.github.jlprat.akka.lnl.intro.typed
 
-import akka.actor.typed.{ActorRef, Behavior}
+import akka.actor.typed.ActorRef
+import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.Behaviors
 import io.github.jlprat.akka.lnl.intro.util.Util
 

@@ -1,7 +1,8 @@
 package io.github.jlprat.akka.lnl.intro.classic
 
-import akka.actor.{Actor, ActorLogging, Props}
-
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.Props
 import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics._
 import io.github.jlprat.akka.lnl.intro.util.Util
 

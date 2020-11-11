@@ -1,19 +1,16 @@
 package io.github.jlprat.akka.lnl.intro.typed
 
-import akka.actor.testkit.typed.CapturedLogEvent
-import akka.actor.testkit.typed.scaladsl.{
-  BehaviorTestKit,
-  ManualTime,
-  ScalaTestWithActorTestKit,
-  TestProbe
-}
-
-import org.scalatest.flatspec.AnyFlatSpecLike
-
 import scala.annotation.nowarn
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future}
 
+import akka.actor.testkit.typed.CapturedLogEvent
+import akka.actor.testkit.typed.scaladsl.BehaviorTestKit
+import akka.actor.testkit.typed.scaladsl.ManualTime
+import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
+import akka.actor.testkit.typed.scaladsl.TestProbe
+import org.scalatest.flatspec.AnyFlatSpecLike
 import org.slf4j.event.Level
 
 class TemperatureGathererAsyncTest

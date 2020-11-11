@@ -1,6 +1,10 @@
 package io.github.jlprat.akka.lnl.supervision.classic
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
+import akka.actor.Terminated
 import io.github.jlprat.akka.lnl.supervision.classic.Watching.Parent.StartJob
 
 object Watching {

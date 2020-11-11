@@ -1,15 +1,16 @@
 package io.github.jlprat.akka.lnl.intro.classic
 
-import akka.actor.ActorSystem
-import akka.testkit.{TestKit, TestProbe}
+import scala.annotation.nowarn
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import scala.concurrent.duration._
 
+import akka.actor.ActorSystem
+import akka.testkit.TestKit
+import akka.testkit.TestProbe
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.BeforeAndAfterAll
-
-import scala.annotation.nowarn
-import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration._
 
 class TemperatureGathererAsyncTest
     extends TestKit(ActorSystem())

@@ -1,12 +1,17 @@
 package io.github.jlprat.akka.lnl.stash.typed
 
-import akka.actor.typed.{ActorRef, Behavior, DispatcherSelector}
-import akka.actor.typed.scaladsl.Behaviors
-import akka.Done
-
-import scala.concurrent.{blocking, ExecutionContext, Future}
-import scala.util.{Failure, Success}
 import scala.annotation.nowarn
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import scala.concurrent.blocking
+import scala.util.Failure
+import scala.util.Success
+
+import akka.Done
+import akka.actor.typed.ActorRef
+import akka.actor.typed.Behavior
+import akka.actor.typed.DispatcherSelector
+import akka.actor.typed.scaladsl.Behaviors
 
 object TransactionalKeyValueStore {
 

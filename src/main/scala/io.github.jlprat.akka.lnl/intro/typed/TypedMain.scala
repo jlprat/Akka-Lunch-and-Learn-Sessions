@@ -1,14 +1,15 @@
 package io.github.jlprat.akka.lnl.intro.typed
 
-import akka.actor.typed.ActorSystem
-import akka.actor.typed.scaladsl.AskPattern._
-import akka.Done
-import akka.util.Timeout
-
+import scala.concurrent.Future
+import scala.concurrent.Promise
+import scala.concurrent.blocking
 import scala.concurrent.duration._
-import scala.concurrent.{blocking, Future, Promise}
 import scala.io.StdIn
 
+import akka.Done
+import akka.actor.typed.ActorSystem
+import akka.actor.typed.scaladsl.AskPattern._
+import akka.util.Timeout
 import io.github.jlprat.akka.lnl.intro.typed.TemperatureStatistics.GetAverageTemperature
 
 object TypedMain {

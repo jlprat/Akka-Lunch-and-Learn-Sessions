@@ -1,9 +1,9 @@
 package io.github.jlprat.akka.lnl.stash.typed
 
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
+import io.github.jlprat.akka.lnl.stash.typed.DropBeforeInit._
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
-import io.github.jlprat.akka.lnl.stash.typed.DropBeforeInit._
 
 class DropBeforeInitTest extends ScalaTestWithActorTestKit with AnyFlatSpecLike with Matchers {
 

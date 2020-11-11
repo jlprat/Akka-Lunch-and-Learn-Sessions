@@ -1,9 +1,10 @@
 package io.github.jlprat.akka.lnl.persistence.typed
 
-import akka.actor.typed.{ActorRef, Behavior}
-import akka.persistence.typed.scaladsl.EventSourcedBehavior
+import akka.actor.typed.ActorRef
+import akka.actor.typed.Behavior
 import akka.persistence.typed.PersistenceId
 import akka.persistence.typed.scaladsl.Effect
+import akka.persistence.typed.scaladsl.EventSourcedBehavior
 
 object PersistentKeyValueStore {
 

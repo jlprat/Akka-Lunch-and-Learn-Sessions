@@ -1,8 +1,12 @@
 package io.github.jlprat.akka.lnl.supervision.classic
 
-import akka.actor.{Actor, ActorRef, AllForOneStrategy, Props, SupervisorStrategy}
 import scala.concurrent.duration._
 
+import akka.actor.Actor
+import akka.actor.ActorRef
+import akka.actor.AllForOneStrategy
+import akka.actor.Props
+import akka.actor.SupervisorStrategy
 import io.github.jlprat.akka.lnl.supervision.classic.SupervisionExample.Child._
 import io.github.jlprat.akka.lnl.supervision.classic.SupervisionExample.Parent.Init
 

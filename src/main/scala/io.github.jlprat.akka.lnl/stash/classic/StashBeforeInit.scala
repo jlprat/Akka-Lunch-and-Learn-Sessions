@@ -1,6 +1,9 @@
 package io.github.jlprat.akka.lnl.stash.classic
 
-import akka.actor.{Actor, ActorLogging, Props, Stash}
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.Props
+import akka.actor.Stash
 import io.github.jlprat.akka.lnl.stash.classic.StashBeforeInit._
 
 object StashBeforeInit {
@@ -27,7 +30,7 @@ class StashBeforeInit extends Actor with Stash with ActorLogging {
       log.info("Initializing - doing some costly things")
       unstashAll()
       context.become(initialized)
-    case Primes(numberOfPrimes) => 
+    case Primes(numberOfPrimes) =>
       log.info("Stashing request to calculate {} number of primes", numberOfPrimes)
       stash()
   }

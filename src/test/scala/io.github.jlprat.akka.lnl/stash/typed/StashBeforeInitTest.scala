@@ -1,10 +1,10 @@
 package io.github.jlprat.akka.lnl.stash.typed
 
+import akka.actor.testkit.typed.scaladsl.LoggingTestKit
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
+import io.github.jlprat.akka.lnl.stash.typed.StashBeforeInit._
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
-import io.github.jlprat.akka.lnl.stash.typed.StashBeforeInit._
-import akka.actor.testkit.typed.scaladsl.LoggingTestKit
 
 class StashBeforeInitTest extends ScalaTestWithActorTestKit with AnyFlatSpecLike with Matchers {
 

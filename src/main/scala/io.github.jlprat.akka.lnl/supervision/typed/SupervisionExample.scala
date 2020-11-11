@@ -1,8 +1,12 @@
 package io.github.jlprat.akka.lnl.supervision.typed
 
-import akka.actor.typed.{ActorRef, Behavior, ChildFailed, SupervisorStrategy}
-import akka.actor.typed.scaladsl.Behaviors
 import scala.concurrent.duration._
+
+import akka.actor.typed.ActorRef
+import akka.actor.typed.Behavior
+import akka.actor.typed.ChildFailed
+import akka.actor.typed.SupervisorStrategy
+import akka.actor.typed.scaladsl.Behaviors
 
 /**
   * Little simplistic actor-backed key/value store

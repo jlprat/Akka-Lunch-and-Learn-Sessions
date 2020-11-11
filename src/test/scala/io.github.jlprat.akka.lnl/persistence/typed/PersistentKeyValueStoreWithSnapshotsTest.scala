@@ -1,13 +1,13 @@
 package io.github.jlprat.akka.lnl.persistence.typed
 
-import akka.actor.testkit.typed.scaladsl.{LoggingTestKit, ScalaTestWithActorTestKit}
+import java.{util => ju}
+
+import akka.actor.testkit.typed.scaladsl.LoggingTestKit
+import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
+import com.typesafe.config.ConfigFactory
+import io.github.jlprat.akka.lnl.persistence.typed.PersistentKeyValueStoreWithSnapshots._
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
-import com.typesafe.config.ConfigFactory
-
-import io.github.jlprat.akka.lnl.persistence.typed.PersistentKeyValueStoreWithSnapshots._
-
-import java.{util => ju}
 
 class PersistentKeyValueStoreWithSnapshotsTest
     extends ScalaTestWithActorTestKit(

@@ -1,21 +1,17 @@
 package io.github.jlprat.akka.lnl.intro.typed
 
+import akka.actor.testkit.typed.CapturedLogEvent
+import akka.actor.testkit.typed.Effect.Spawned
+import akka.actor.testkit.typed.scaladsl.BehaviorTestKit
+import akka.actor.testkit.typed.scaladsl.TestInbox
+import akka.actor.typed.scaladsl.Behaviors
+import io.github.jlprat.akka.lnl.intro.typed.TemperatureStatistics.GetAverageTemperature
+import io.github.jlprat.akka.lnl.intro.typed.TemperatureStatistics.GetMaxTemperature
+import io.github.jlprat.akka.lnl.intro.typed.TemperatureStatistics.GetMinTemperature
+import io.github.jlprat.akka.lnl.intro.typed.TemperatureStatistics.TemperatureReading
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-
 import org.slf4j.event.Level
-
-import akka.actor.testkit.typed.CapturedLogEvent
-import akka.actor.testkit.typed.scaladsl.{BehaviorTestKit, TestInbox}
-import akka.actor.typed.scaladsl.Behaviors
-
-import io.github.jlprat.akka.lnl.intro.typed.TemperatureStatistics.{
-  GetAverageTemperature,
-  GetMaxTemperature,
-  GetMinTemperature,
-  TemperatureReading
-}
-import akka.actor.testkit.typed.Effect.Spawned
 
 class TemperatureStatisticsTest extends AnyFlatSpec with Matchers {
 

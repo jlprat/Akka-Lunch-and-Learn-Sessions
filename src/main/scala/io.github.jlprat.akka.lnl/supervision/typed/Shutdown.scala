@@ -1,8 +1,10 @@
 package io.github.jlprat.akka.lnl.supervision.typed
 
-import akka.actor.typed.{Behavior, PostStop}
-import akka.actor.typed.scaladsl.{ActorContext, Behaviors}
 import akka.actor.typed.ActorRef
+import akka.actor.typed.Behavior
+import akka.actor.typed.PostStop
+import akka.actor.typed.scaladsl.ActorContext
+import akka.actor.typed.scaladsl.Behaviors
 
 /**
   * This behavior showcases how to listen to its own termination

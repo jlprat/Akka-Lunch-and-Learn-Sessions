@@ -2,24 +2,18 @@ package io.github.jlprat.akka.lnl.supervision.typed
 
 import akka.actor.testkit.typed.CapturedLogEvent
 import akka.actor.testkit.typed.Effect.Watched
-import akka.actor.testkit.typed.scaladsl.{
-  BehaviorTestKit,
-  Effects,
-  LoggingTestKit,
-  ScalaTestWithActorTestKit
-}
-
+import akka.actor.testkit.typed.scaladsl.BehaviorTestKit
+import akka.actor.testkit.typed.scaladsl.Effects
+import akka.actor.testkit.typed.scaladsl.LoggingTestKit
+import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import akka.actor.typed.ActorRef
-
 import io.github.jlprat.akka.lnl.supervision.typed.Initialization
 import io.github.jlprat.akka.lnl.supervision.typed.Initialization.Init
-
 import io.github.jlprat.akka.lnl.supervision.typed.Restart
-import io.github.jlprat.akka.lnl.supervision.typed.Restart.{Boom, ChildCommand}
-
+import io.github.jlprat.akka.lnl.supervision.typed.Restart.Boom
+import io.github.jlprat.akka.lnl.supervision.typed.Restart.ChildCommand
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
-
 import org.slf4j.event.Level
 
 class InitializationTest extends ScalaTestWithActorTestKit with AnyFlatSpecLike with Matchers {

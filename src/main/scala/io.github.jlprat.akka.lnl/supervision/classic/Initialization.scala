@@ -1,6 +1,7 @@
 package io.github.jlprat.akka.lnl.supervision.classic
 
-import akka.actor.{Actor, Props}
+import akka.actor.Actor
+import akka.actor.Props
 import io.github.jlprat.akka.lnl.supervision.classic.Initialization._
 
 object Initialization {

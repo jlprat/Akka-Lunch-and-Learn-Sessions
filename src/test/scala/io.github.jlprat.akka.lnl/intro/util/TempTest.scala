@@ -1,10 +1,10 @@
 package io.github.jlprat.akka.lnl.intro.util
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import org.scalatest.concurrent.ScalaFutures
 
 
 class TempTest extends AnyFlatSpec with Matchers with ScalaFutures {

@@ -1,6 +1,8 @@
 package io.github.jlprat.akka.lnl.supervision.classic
 
-import akka.actor.{Actor, ActorLogging, Props}
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.Props
 import io.github.jlprat.akka.lnl.supervision.classic.Shutdown._
 
 object Shutdown {

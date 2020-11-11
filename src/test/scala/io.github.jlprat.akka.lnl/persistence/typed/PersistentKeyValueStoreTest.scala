@@ -1,10 +1,10 @@
 package io.github.jlprat.akka.lnl.persistence.typed
 
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
-import org.scalatest.flatspec.AnyFlatSpecLike
-import org.scalatest.matchers.should.Matchers
 import com.typesafe.config.ConfigFactory
 import io.github.jlprat.akka.lnl.persistence.typed.PersistentKeyValueStore._
+import org.scalatest.flatspec.AnyFlatSpecLike
+import org.scalatest.matchers.should.Matchers
 
 class PersistentKeyValueStoreTest
     extends ScalaTestWithActorTestKit(ConfigFactory.defaultApplication())

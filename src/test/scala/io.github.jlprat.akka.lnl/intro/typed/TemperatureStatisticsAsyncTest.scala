@@ -1,19 +1,15 @@
 package io.github.jlprat.akka.lnl.intro.typed
 
+import scala.concurrent.duration._
+
+import akka.actor.testkit.typed.scaladsl.ActorTestKit
+import io.github.jlprat.akka.lnl.intro.typed.TemperatureStatistics.GetAverageTemperature
+import io.github.jlprat.akka.lnl.intro.typed.TemperatureStatistics.GetMaxTemperature
+import io.github.jlprat.akka.lnl.intro.typed.TemperatureStatistics.GetMinTemperature
+import io.github.jlprat.akka.lnl.intro.typed.TemperatureStatistics.TemperatureReading
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-
-import akka.actor.testkit.typed.scaladsl.ActorTestKit
-
-import scala.concurrent.duration._
-
-import io.github.jlprat.akka.lnl.intro.typed.TemperatureStatistics.{
-  GetAverageTemperature,
-  GetMaxTemperature,
-  GetMinTemperature,
-  TemperatureReading
-}
 
 class TemperatureStatisticsAsyncTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 

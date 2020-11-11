@@ -1,12 +1,14 @@
 package io.github.jlprat.akka.lnl.stash.typed
 
-import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
-import akka.actor.typed.scaladsl.Behaviors
-import akka.actor.typed.scaladsl.AskPattern._
-import akka.util.Timeout
-
 import scala.concurrent.duration._
 import scala.io.StdIn
+
+import akka.actor.typed.ActorRef
+import akka.actor.typed.ActorSystem
+import akka.actor.typed.Behavior
+import akka.actor.typed.scaladsl.AskPattern._
+import akka.actor.typed.scaladsl.Behaviors
+import akka.util.Timeout
 
 object ChunkedUnstash {
 

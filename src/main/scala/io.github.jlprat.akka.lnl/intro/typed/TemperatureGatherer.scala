@@ -1,12 +1,15 @@
 package io.github.jlprat.akka.lnl.intro.typed
 
-import akka.actor.typed.{ActorRef, Behavior, DispatcherSelector}
-import akka.actor.typed.scaladsl.Behaviors
-
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.util.{Failure, Success}
+import scala.util.Failure
+import scala.util.Success
 
+import akka.actor.typed.ActorRef
+import akka.actor.typed.Behavior
+import akka.actor.typed.DispatcherSelector
+import akka.actor.typed.scaladsl.Behaviors
 import io.github.jlprat.akka.lnl.intro.typed.TemperatureStatistics.TemperatureReading
 
 object TemperatureGatherer {

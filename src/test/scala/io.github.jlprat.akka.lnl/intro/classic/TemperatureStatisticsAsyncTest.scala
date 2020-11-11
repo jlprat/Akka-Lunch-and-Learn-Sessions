@@ -1,20 +1,17 @@
 package io.github.jlprat.akka.lnl.intro.classic
 
-import akka.actor.ActorSystem
-import akka.testkit.{ImplicitSender, TestKit}
-
-import org.scalatest.flatspec.AnyFlatSpecLike
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.BeforeAndAfterAll
-
 import scala.concurrent.duration._
 
-import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics.{
-  GetAverageTemperature,
-  GetMaxTemperature,
-  GetMinTemperature,
-  TemperatureReading
-}
+import akka.actor.ActorSystem
+import akka.testkit.ImplicitSender
+import akka.testkit.TestKit
+import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics.GetAverageTemperature
+import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics.GetMaxTemperature
+import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics.GetMinTemperature
+import io.github.jlprat.akka.lnl.intro.classic.TemperatureStatistics.TemperatureReading
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.flatspec.AnyFlatSpecLike
+import org.scalatest.matchers.should.Matchers
 
 /**
   */

@@ -1,12 +1,16 @@
 package io.github.jlprat.akka.lnl.intro.classic
 
-import akka.actor.{Actor, ActorLogging, Props, Timers}
-import akka.pattern.pipe
-
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 import scala.concurrent.duration._
 
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.Props
+import akka.actor.Timers
+import akka.pattern.pipe
+
 import TemperatureGatherer._
-import scala.concurrent.{ExecutionContext, Future}
 
 object TemperatureGatherer {
   private case object TimerKey

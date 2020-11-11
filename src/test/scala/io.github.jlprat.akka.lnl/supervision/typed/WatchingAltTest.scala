@@ -1,11 +1,10 @@
 package io.github.jlprat.akka.lnl.supervision.typed
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.flatspec.AnyFlatSpecLike
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
-
 import io.github.jlprat.akka.lnl.supervision.typed.WatchingAlt
 import io.github.jlprat.akka.lnl.supervision.typed.WatchingAlt._
+import org.scalatest.flatspec.AnyFlatSpecLike
+import org.scalatest.matchers.should.Matchers
 
 class WatchingAltTest extends ScalaTestWithActorTestKit with AnyFlatSpecLike with Matchers {
 

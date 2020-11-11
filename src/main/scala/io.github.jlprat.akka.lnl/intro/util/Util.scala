@@ -1,8 +1,11 @@
 package io.github.jlprat.akka.lnl.intro.util
 
-import java.io.{BufferedReader, InputStreamReader}
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
-import scala.concurrent.{blocking, ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import scala.concurrent.blocking
 
 object Util {
   def getTemperature(ec: ExecutionContext): Future[Double] = {
