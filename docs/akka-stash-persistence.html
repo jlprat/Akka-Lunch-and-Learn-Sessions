@@ -653,6 +653,12 @@ object PersistentKeyValueStoreWithSnapshots {
 }</code></pre>
       </section>
       <section>
+        <h3>Bonus: What if my events evolve?</h3>
+        <p>Akka Persistence offers mechanism to migrate different schema versions of your Events. In order to do so, one
+          needs to implement their own version of an <code>EventAdapter</code>, which will convert events from version
+          to another</p>
+      </section>
+      <section>
         <h3>Thanks! And leave feedback!</h3>
         <a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
           target="_blank">Write Feedback!</a>
@@ -680,6 +686,7 @@ object PersistentKeyValueStoreWithSnapshots {
       progress: true,
       showSlideNumber: 'all',
       center: true,
+      slideNumber: true,
       transition: 'convex', // none/fade/slide/convex/concave/zoom
       // Learn about plugins: https://revealjs.com/plugins/
       plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom, RevealHighlight]
