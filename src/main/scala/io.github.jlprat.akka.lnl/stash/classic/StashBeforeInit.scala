@@ -23,6 +23,9 @@ object StashBeforeInit {
 
 }
 
+/**
+  * Class Showcasing the how to stash messages received before the actor is properly initialized
+  */
 class StashBeforeInit extends Actor with Stash with ActorLogging {
 
   override def receive: Actor.Receive = {

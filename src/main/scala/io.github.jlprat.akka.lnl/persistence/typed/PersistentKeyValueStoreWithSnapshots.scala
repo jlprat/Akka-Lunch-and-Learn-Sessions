@@ -7,6 +7,10 @@ import akka.persistence.typed.scaladsl.Effect
 import akka.persistence.typed.scaladsl.EventSourcedBehavior
 import akka.persistence.typed.scaladsl.RetentionCriteria
 
+/**
+  * Event Streaming Key Value Store using the power of Akka Persistence
+  * Uses Snapshots to speed up recovery
+  */
 object PersistentKeyValueStoreWithSnapshots {
 
   sealed trait PutResponse                       extends CborSerializable
@@ -30,6 +34,10 @@ object PersistentKeyValueStoreWithSnapshots {
     val empty = State(Map.empty)
   }
 
+  /**
+    * Factory method to create the persistent Behavior
+    * @param id Entity ID, is the ID that identifies the storage for this particular Key Value Store
+    */
   def apply(id: String): Behavior[Command] =
     EventSourcedBehavior[Command, Event, State](
       persistenceId = PersistenceId("KeyValueStore", id),
