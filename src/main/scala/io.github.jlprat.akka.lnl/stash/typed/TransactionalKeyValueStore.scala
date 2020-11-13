@@ -13,6 +13,10 @@ import akka.actor.typed.Behavior
 import akka.actor.typed.DispatcherSelector
 import akka.actor.typed.scaladsl.Behaviors
 
+/**
+  * Key Value Store in which effects keep the "before-than" property as their commands
+  * If a PUT is sent *before than* a GET, the later is guaranteed to be processed only after the former is
+  */
 object TransactionalKeyValueStore {
 
   sealed trait PutResponse
@@ -39,6 +43,7 @@ object TransactionalKeyValueStore {
       Behaviors.receiveMessage {
         case Put(key, value, replyTo) =>
           val saved = saveToDatabase(key, value)
+          // Once future is completed, the actor will receive the proper message
           context.pipeToSelf(saved) {
             case Failure(exception) =>
               context.log.error("Error Saving to DB", exception)
@@ -68,6 +73,7 @@ object TransactionalKeyValueStore {
           replyTo.tell(Stored(key))
           buffer.unstashAll(apply(storage + (key -> value)))
         case msg =>
+          // No other message is allowed to be processed while saving
           buffer.stash(msg)
           Behaviors.same
       }

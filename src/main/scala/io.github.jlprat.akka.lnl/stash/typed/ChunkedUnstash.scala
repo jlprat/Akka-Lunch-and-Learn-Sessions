@@ -10,6 +10,9 @@ import akka.actor.typed.scaladsl.AskPattern._
 import akka.actor.typed.scaladsl.Behaviors
 import akka.util.Timeout
 
+/**
+  * Class Showcasing how to unstash messages in chunks so the actor can respond to external clients
+  */
 object ChunkedUnstash {
 
   case class Done(primes: List[Int])
@@ -30,9 +33,14 @@ object ChunkedUnstash {
           case (context, Initialize) =>
             context.log.info("Initializing - doing some costly things")
             if (stashBuffer.size > 0) {
-              context.self.tell(ResumeUnstash)
+
+              context.self.tell(ResumeUnstash) // Message enqueued to the end of the Mailbox
+              // Only 5 messages will be unstashed
+              // `initialized` would be the initial behavior that will start with the processing
+              // All unstashed messages will be wrapped with the [[Stashed]] class
               stashBuffer.unstash(initialized(), 5, Stashed)
             } else {
+              // Nothing got stashed, we can go on normally
               initialized()
             }
           case (context, msg @ Primes(numberOfPrimes, _)) =>
@@ -45,17 +53,22 @@ object ChunkedUnstash {
       def initialized(): Behavior[Command] =
         Behaviors.receive {
           case (context, Stashed(Primes(numberOfPrimes, replyTo))) =>
+            // A previously stashed message is received
             context.log.info("Processing a previously stashed message")
             val nPrimes = primeStream(LazyList.from(2)).take(numberOfPrimes)
             replyTo.tell(Done(nPrimes.toList))
             Behaviors.same
           case (context, Primes(numberOfPrimes, replyTo)) =>
+            // A new message is received
             context.log.info("Processing a fresh new message")
             val nPrimes = primeStream(LazyList.from(2)).take(numberOfPrimes)
             replyTo.tell(Done(nPrimes.toList))
             Behaviors.same
           case (context, ResumeUnstash) =>
+            // Internal message that was appended to the Mailbox
+            // Once we receive this message, we are sure we finished unstashing the previous batch
             if (stashBuffer.size > 0) {
+              // We have more batches to process
               context.log.info("Finished one batch of unstashing")
               context.self.tell(ResumeUnstash)
               stashBuffer.unstash(initialized(), 5, Stashed)

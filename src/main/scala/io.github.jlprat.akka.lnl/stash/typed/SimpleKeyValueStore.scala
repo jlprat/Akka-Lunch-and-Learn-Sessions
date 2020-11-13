@@ -13,6 +13,10 @@ import akka.actor.typed.Behavior
 import akka.actor.typed.DispatcherSelector
 import akka.actor.typed.scaladsl.Behaviors
 
+/**
+  * Key Value Store (with a single node).
+  * Messages are only guaranteed to be persisted once the reply is sent
+  */
 object SimpleKeyValueStore {
 
   sealed trait PutResponse
@@ -34,11 +38,13 @@ object SimpleKeyValueStore {
 
   def apply(storage: Map[String, String] = Map.empty): Behavior[Command] =
     Behaviors.setup { context =>
-      implicit val ec: ExecutionContext =
+      implicit val blockingEC: ExecutionContext =
         context.system.dispatchers.lookup(DispatcherSelector.blocking())
       Behaviors.receiveMessage {
         case Put(key, value, replyTo) =>
+          // We request a DB save
           val saved = saveToDatabase(key, value)
+          // When future is completed, we'll get the right message
           context.pipeToSelf(saved) {
             case Failure(exception) =>
               context.log.error("Error Saving to DB", exception)
@@ -56,11 +62,15 @@ object SimpleKeyValueStore {
           replyTo.tell(Failed(key))
           Behaviors.same
         case KeyValueStored(key, value, replyTo) =>
+          // Key-Value can be safely stored now
           replyTo.tell(Stored(key))
           apply(storage + (key -> value))
       }
     }
 
+  /**
+    * We pretend this is a costly DB save operation
+    */
   @nowarn
   def saveToDatabase(key: String, value: String)(implicit ec: ExecutionContext): Future[Done] =
     Future {
