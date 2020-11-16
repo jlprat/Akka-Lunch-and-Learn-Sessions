@@ -301,16 +301,16 @@ object ChunkedUnstash {
         <p>Go and run <a
             href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/blob/master/src/main/scala/io.github.jlprat.akka.lnl/stash/typed/ChunkedUnstash.scala"><code>ChunkedUnstash</code></a>.
         </p>
-        <p>Logs should show that messages received while unstashing are not processed last.p>
+        <p>Logs should show that messages received while unstashing are not processed last.</p>
       </section>
       <section>
         <h3>How to keep messages while performing costly operation?</h3>
-        <p>Use case: we have some costly writes. While writes are not correctly persisted, we should not process any
-          read.</p>
+        <p>Use case: we have some costly writes. While writes are not correctly persisted, we should not process some
+          potential conflicting operations.</p>
       </section>
       <section>
         <h3>How to keep messages while performing costly operation?</h3>
-        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|11-13,20|15-17,21|23-26|43-47|48-50|51-53|33-42">import akka.actor.typed.{ActorRef, Behavior, DispatcherSelector}
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|11-13,20|15-17,21|23-26|43-47|33-42`|48-50|51-53">import akka.actor.typed.{ActorRef, Behavior, DispatcherSelector}
 import akka.actor.typed.scaladsl.Behaviors
 import akka.Done
 
@@ -318,7 +318,7 @@ import scala.concurrent.{blocking, ExecutionContext, Future}
 import scala.util.{Failure, Success}
 import scala.annotation.nowarn
 
-object FaultyKeyValueStore {
+object SimpleKeyValueStore {
 
   sealed trait PutResponse
   case class Stored(key: String) extends PutResponse
@@ -468,7 +468,7 @@ object TransactionalKeyValueStore {
       <section>
         <h3>How to build an Event Sourced App?</h3>
         <p>We need to understand the difference between <b>Commands</b> and <b>Events</b>.</p>
-        <p><b>Commands</b> are the received messages of an Actor. They are not yet validated nor peristed.</p>
+        <p><b>Commands</b> are the received messages of an Actor. They are not yet validated nor persisted.</p>
         <p>After successful validation, a Command is converted to an <b>Event</b>, which represents the actions to
           perform to the Actor's inner <b>State</b>.
         </p>
@@ -559,7 +559,7 @@ object PersistentKeyValueStore {
       </section>
       <section>
         <h3>Why should we save Snapshots?</h3>
-        <p>When recovering, a Persistent Actor will first attempt to restore the latest Snapshot, and ten, replay all
+        <p>When recovering, a Persistent Actor will first attempt to restore the latest Snapshot, and then, replay all
           subsequent events.</p>
       </section>
       <section>
