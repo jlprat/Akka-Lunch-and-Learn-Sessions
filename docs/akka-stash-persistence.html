@@ -225,7 +225,7 @@ object StashBeforeInit {
       </section>
       <section>
         <h3>How to avoid unstash unresponsiveness?</h3>
-        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|13-17|16-17|26-33|29-30|43-52|44,49|54-61">import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|13-17|16-17|26-33|29-30|43-52|44,49|53-61">import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.scaladsl.AskPattern._
 import akka.util.Timeout
@@ -310,7 +310,7 @@ object ChunkedUnstash {
       </section>
       <section>
         <h3>How to keep messages while performing costly operation?</h3>
-        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|11-13,20|15-17,21|23-26|43-47|33-42`|48-50|51-53">import akka.actor.typed.{ActorRef, Behavior, DispatcherSelector}
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|11-13,20|15-17,21|23-26|43-47|33-42|48-50|51-53">import akka.actor.typed.{ActorRef, Behavior, DispatcherSelector}
 import akka.actor.typed.scaladsl.Behaviors
 import akka.Done
 
