@@ -27,7 +27,7 @@ object ChunkedUnstash {
     LazyList.cons(s.head, primeStream(s.tail filter { _ % s.head != 0 }))
 
   def apply(): Behavior[Command] =
-    Behaviors.withStash(300) { stashBuffer =>
+    Behaviors.withStash(30) { stashBuffer =>
       def uninitialized(): Behavior[Command] =
         Behaviors.receive {
           case (context, Initialize) =>
@@ -87,8 +87,8 @@ object ChunkedUnstash {
 
   def main(args: Array[String]): Unit = {
 
-    val ANSI_BLUE = "\u001B[34m"
-    val ANSI_RESET = "\u001B[0m"
+    val ANSI_BLUE   = "\u001B[34m"
+    val ANSI_RESET  = "\u001B[0m"
     val ANSI_PURPLE = "\u001B[35m"
 
     implicit val system: ActorSystem[Command] =
@@ -101,7 +101,9 @@ object ChunkedUnstash {
     (1 to 30).foreach { _ =>
       system
         .ask(ref => Primes(40, ref))
-        .foreach(done => println(s"${ANSI_PURPLE}Prime Calculated ${done.primes.mkString(",")}$ANSI_RESET"))
+        .foreach(done =>
+          println(s"${ANSI_PURPLE}Prime Calculated ${done.primes.mkString(",")}$ANSI_RESET")
+        )
     }
 
     // We initialize the system
@@ -109,7 +111,9 @@ object ChunkedUnstash {
 
     system
       .ask(ref => Primes(100, ref))
-      .foreach(done => println(s"${ANSI_BLUE}Should not be printed last ${done.primes.mkString(",")}$ANSI_RESET"))
+      .foreach(done =>
+        println(s"${ANSI_BLUE}Should not be printed last ${done.primes.mkString(",")}$ANSI_RESET")
+      )
 
     StdIn.readLine("Press RETURN to stop...\n")
 
