@@ -2,7 +2,7 @@ name := "Akka-Lunch-And-Learn-Sessions"
 
 version := "1.0"
 
-scalaVersion := "2.13.3"
+scalaVersion := "2.13.4"
 
 lazy val akkaVersion = "2.6.10"
 
