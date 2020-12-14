@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Routing Akka</title>
+
+  <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+
+  <link rel="stylesheet" href="dist/reset.css">
+  <link rel="stylesheet" href="dist/reveal.css">
+  <link rel="stylesheet" href="dist/theme/beige.css" id="theme">
+
+  <!-- Theme used for syntax highlighted code -->
+  <link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
+  <style type="text/css">
+    .reveal code:not(.hljs) {
+      color: gray;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <section>
+        <a href="https://akka.io"><img src="images/akka-reverse-large.png" alt="Akka Logo"
+            style="background-color: #15a9ce;"></a>
+        <h2>Routing Akka</h2>
+        <p>
+          <small>Josep Prat &nbsp;<a href="https://github.com/jlprat"><img src="images/GitHub-Mark-32px.png"
+                alt="GitHub Logo" style="margin: 0"></a>&nbsp;- 2021/01/xx </small>
+        </p>
+      </section>
+      <section>
+        <h3>Link to the companion Repo</h3>
+        <p>
+          <a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/"><img src="images/akka-lunch-learn.svg"
+              alt="QR code for the repository"></a>
+        </p>
+      </section>
+      <section>
+        <h3>Questions:</h3>
+        <ul>
+          <li>What are Akka Routers?</li>
+          <li>What is the difference between Pool and Group?</li>
+          <li>When to use Pool?</li>
+          <li>When to use Group?</li>
+          <li>What are the use cases for each Routing Strategy?</li>
+          <li>How to broadcast a message?</li>
+        </ul>
+      </section>
+      <section>
+        <h3>What are Akka Routers?</h3>
+        <p>Routers are Akka's mechanism to distribute messages to a set of Actors.
+          Enabling this way, parallel message processing.
+        </p>
+      </section>
+      <section>
+        <h3>What are Akka Routers?</h3>
+        <p>Typically, an Actor (Router) will configure a router instance with several
+          actors (Routee).
+        </p>
+        <img src="images/router.svg" alt="Diagram showcasing a Router delivering messages to its routees" />
+      </section>
+      <section>
+        <h3>What are Akka Routers?</h3>
+        <p>There are 2 types of Routers in Akka, <b>Pool</b> and <b>Group</b>. The difference between them lies
+          on where the Routees are created.</p>
+      </section>
+      <section>
+        <h3>What is the difference between Pool and Group?</h3>
+        <p><b>Pool Router</b>: All Routees are children of the Router Actor.</p>
+        <p><b>Group Router</b>: All Routees are created outside of the Router Actor.</p>
+      </section>
+      <section>
+        <h3>When to use Pool?</h3>
+        <p>Given that the Router must create the Routees, it is responsible for its lifecycle.
+          The Pool Router will automatically remove terminated actors for the pool.
+        </p>
+      </section>
+      <section>
+        <h3>When to use Pool?</h3>
+        <p>Pool Routers are best used for local actors. However, in Classic one could deploy
+          (some of) the Routees in other nodes / servers.
+        </p>
+      </section>
+      <section>
+        <h3>When to use Pool?</h3>
+        <p>Use it if you prefer:</p>
+        <ul>
+          <li>Managed membership on the Router.</li>
+          <li>Control over the Routees lifecycle.</li>
+          <li>Local actors spawned.</li>
+        </ul>
+      </section>
+      <section>
+        <h3>Thanks! And leave feedback!</h3>
+        <a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
+          target="_blank">Write Feedback!</a>
+        <p>
+          <small>Josep Prat &nbsp;<a href="https://github.com/jlprat"><img src="images/GitHub-Mark-32px.png"
+                alt="GitHub Logo" style="margin: 0"></a>&nbsp;- 2021/01/xx </small>
+        </p>
+      </section>
+    </div>
+  </div>
+
+  <script src="dist/reveal.js"></script>
+  <script src="plugin/notes/notes.js"></script>
+  <script src="plugin/markdown/markdown.js"></script>
+  <script src="plugin/zoom/zoom.js"></script>
+  <script src="plugin/highlight/highlight.js"></script>
+
+  <script>
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.initialize({
+      hash: true,
+      controls: true,
+      progress: true,
+      showSlideNumber: 'all',
+      center: true,
+      slideNumber: true,
+      transition: 'convex', // none/fade/slide/convex/concave/zoom
+      // Learn about plugins: https://revealjs.com/plugins/
+      plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom, RevealHighlight]
+    });
+  </script>
+</body>
+
+</html>
