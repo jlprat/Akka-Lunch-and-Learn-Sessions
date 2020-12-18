@@ -97,6 +97,86 @@
         </ul>
       </section>
       <section>
+        <h3>How to use Pool Routers?</h3>
+        <p>Given this worker:</p>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|7-8|30-42|17-28">import akka.actor.typed.scaladsl.Behaviors
+import akka.actor.typed.Behavior
+import scala.annotation.tailrec
+
+object PrimeFactorization {
+
+  sealed trait Command
+  case class PrimeFactor(n: Long) extends Command
+
+  /**
+    * Gives the prime factors of the given number
+    * @param n remaining of the number to factorize
+    * @param primes stream of primes
+    * @param factors already calculated factors
+    * @return
+    */
+  @tailrec
+  def primeFactors(n: Long, factors: Seq[Long]): Seq[Long] = {
+    if (n == 1) factors.reverse
+    else {
+      // This loop is not a Range because Long rages exceed the maximum length
+      var i = 2L
+      while (!(n % i == 0)) {
+        i = i + 1
+      }
+      primeFactors(n / i, i +: factors)
+    }
+  }
+
+  def apply(): Behavior[Command] =
+    Behaviors.setup { context =>
+      Behaviors.receiveMessage[Command] {
+        case PrimeFactor(n) =>
+          context.log.info(
+            "Primes for {} is {}",
+            n,
+            primeFactors(n, Seq.empty).mkString(", ")
+          )
+          Behaviors.same
+      }
+    }
+
+}</code></pre>
+      </section>
+      <section>
+        <h3>How to use Pool Routers?</h3>
+        <p>We create the following router:</p>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|3-6|4-5|8|10-12">...
+val primeFactorizationPool = Behaviors.setup[Unit] { ctx =>
+  val pool = Routers.pool(5) {
+    Behaviors.supervise(PrimeFactorization())
+      .onFailure(SupervisorStrategy.restart)
+  }
+
+  val router = ctx.spawn(pool, "prime-factor-pool")
+
+  toFactor.foreach { n =>
+    router.tell(PrimeFactorization.PrimeFactor(n))
+  }
+
+  Behaviors.empty
+}
+
+val system = ActorSystem[Unit](primeFactorizationPool, "PrimeFactorization")
+...</code></pre>
+      </section>
+      <section>
+        <h3>How to use Pool Routers?</h3>
+        <p>Go and run <a
+            href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/blob/master/src/main/scala/io.github.jlprat.akka.lnl/routers/typed/PrimeFactorizationMain.scala"><code>PrimeFactorizationMain</code></a>.
+        </p>
+      </section>
+      <section>
+        <h3>How to use Pool Routers?</h3>
+        <p>Remember to supervise the Routee behavior if you want the pool size to be stable in size.</p>
+        </p>
+      </section>
+      <section>
         <h3>Thanks! And leave feedback!</h3>
         <a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
           target="_blank">Write Feedback!</a>
