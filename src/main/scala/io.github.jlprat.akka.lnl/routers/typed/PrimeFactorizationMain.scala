@@ -15,7 +15,7 @@ object PrimeFactorizationMain {
       4934578352334L, 4934578352334L, 4934578352334L, 4934578352334L, 4934578352334L,
       4934578352334L, 4934578352334L, 4934578352334L, 4934578352334L, 4934578352334L)
 
-    val poolSetup = Behaviors.setup[Unit] { ctx =>
+    val primeFactorizationPool = Behaviors.setup[Unit] { ctx =>
       val pool = Routers.pool(5) {
         Behaviors.supervise(PrimeFactorization()).onFailure(SupervisorStrategy.restart)
       }
@@ -29,7 +29,7 @@ object PrimeFactorizationMain {
       Behaviors.empty
     }
 
-    val system = ActorSystem[Unit](poolSetup, "PrimeFactorization")
+    val system = ActorSystem[Unit](primeFactorizationPool, "PrimeFactorization")
 
     println("App will shutdown in 10 seconds")
     Thread.sleep(10.seconds.toMillis)
