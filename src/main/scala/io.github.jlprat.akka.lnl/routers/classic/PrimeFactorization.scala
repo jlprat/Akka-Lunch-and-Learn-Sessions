@@ -6,9 +6,11 @@ import akka.actor.Props
 import scala.annotation.tailrec
 
 import PrimeFactorization._
-import io.github.jlprat.akka.lnl.routers.classic.PrimeFactorizationRouter.PrimeFactor
 
 object PrimeFactorization {
+
+  trait Command
+  case class PrimeFactor(n: Long) extends Command
 
   /**
     * Gives the prime factors of the given number

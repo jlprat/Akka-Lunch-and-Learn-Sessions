@@ -1,10 +1,11 @@
 package io.github.jlprat.akka.lnl.routers.classic
 
 import akka.actor.ActorSystem
-import io.github.jlprat.akka.lnl.routers.classic.PrimeFactorizationRouter.PrimeFactor
 
 import scala.concurrent.duration._
 import scala.concurrent.Await
+import akka.routing.RoundRobinPool
+import io.github.jlprat.akka.lnl.routers.classic.PrimeFactorization.PrimeFactor
 
 object PrimeFactorizationMain {
 
@@ -13,9 +14,9 @@ object PrimeFactorizationMain {
       4934578352334L, 4934578352334L, 4934578352334L, 4934578352334L, 4934578352334L,
       4934578352334L, 4934578352334L, 4934578352334L, 4934578352334L, 4934578352334L)
 
-    val system = ActorSystem()
+    val system = ActorSystem("PrimeFactorization")
 
-    val router = system.actorOf(PrimeFactorizationRouter.props())
+    val router = system.actorOf(RoundRobinPool(5).props(PrimeFactorization.props()), "PrimeFactorizationRouter")
 
     toFactor.foreach { number =>
       router ! PrimeFactor(number)

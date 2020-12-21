@@ -149,44 +149,8 @@ class PrimeFactorization extends Actor with ActorLogging {
       <section>
         <h3>How to use Pool Routers?</h3>
         <p>We create the following router in Akka Classic:</p>
-        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|11-12|19-26|20-24|22|25|28-36|29|30-35">import akka.actor.Props
-import akka.actor.Actor
-import akka.routing.ActorRefRoutee
-import akka.routing.Router
-import akka.routing.RoundRobinRoutingLogic
-import io.github.jlprat.akka.lnl.routers.classic.PrimeFactorizationRouter.PrimeFactor
-import akka.actor.Terminated
-
-object PrimeFactorizationRouter {
-
-  trait Command
-  case class PrimeFactor(n: Long) extends Command
-
-  def props(): Props = Props.create(classOf[PrimeFactorizationRouter])
-}
-
-class PrimeFactorizationRouter extends Actor {
-
-  var router = {
-    val routees = Vector.fill(5) {
-      val r = context.actorOf(Props[PrimeFactorization]())
-      context.watch(r) // We want to restart the actor if it terminates
-      ActorRefRoutee(r)
-    }
-    Router(RoundRobinRoutingLogic(), routees)
-  }
-
-  override def receive: Actor.Receive = {
-    case msg: PrimeFactor => router.route(msg, sender())
-    case Terminated(a)    =>
-      // This will recreate a worker in case of unexpected termination
-      router = router.removeRoutee(a)
-      val r = context.actorOf(Props[PrimeFactorization]())
-      context.watch(r)
-      router = router.addRoutee(r)
-  }
-
-}</code></pre>
+        <pre><code class="scala" data-trim style="font-size: 18px;">val router = system.actorOf(RoundRobinPool(5)
+          .props(PrimeFactorization.props()), "PrimeFactorizationRouter")</code></pre>
       </section>
       <section>
         <h3>How to use Pool Routers?</h3>
@@ -280,7 +244,40 @@ val system = ActorSystem[Unit](primeFactorizationPool, "PrimeFactorization")
         <p>Remember to supervise the Routee behavior if you want the pool size to be stable in size.</p>
         </p>
       </section>
-      
+      <section>
+        <h3>Detour: Actor Path</h3>
+        <p>An Actor Path is the hierarchical path of actor names starting at the "User Guardian" actor.</p>
+      </section>
+      <section>
+        <h3>Detour: Actor Path</h3>
+        <img src="images/actor-paths.svg" alt="Diagram showcasing a Actor Paths" />
+      </section>
+      <section>
+        <h3>Detour: Actor Path</h3>
+        <p>In Akka Classic, an actor can be retrieved by the given <code>Actor Path</code>.</p>
+        <p>In Akka Typed, one must should use the newly introduced <code>Receptionist</code>.</p>
+      </section>
+      <section>
+        <h3>When to use Group?</h3>
+        <p>Group Routers are best used when the workers might be created in different places.</p>
+        <p>Even, in different <code>ActorSystems</code>.</p>
+      </section>
+      <section>
+        <h3>When to use Pool?</h3>
+        <p>Use it if you prefer:</p>
+        <ul>
+          <li>Manual membership on the Router.</li>
+          <li>Delegate lifecycle of Routees elsewhere.</li>
+          <li>Routees not as children of the Router.</li>
+          <li>Cluster friendly.</li>
+        </ul>
+      </section>
+      <section>
+        <h3>How to use Group Routers?</h3>
+        <p>Given the same Routee as before, find the Router:</p>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|3-6|4-5|8|10-12">
+        </code></pre>
+      </section>
       <section>
         <h3>Thanks! And leave feedback!</h3>
         <a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
