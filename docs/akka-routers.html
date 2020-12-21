@@ -160,8 +160,9 @@ class PrimeFactorization extends Actor with ActorLogging {
       </section>
       <section>
         <h3>How to use Pool Routers?</h3>
-        <p>If you want the pool of workers constant in size, remember to watch the workers so you can restart them in
-          case of unexpected termination.</p>
+        <p>In case of Routee another supervision strategy is needed, it can be configured
+          in the <code>Pool</code> builder using <code>.withSupervisorStrategy</code> method.</p>
+        <pre><code></code></pre>
         </p>
       </section>
       <section>
@@ -274,9 +275,44 @@ val system = ActorSystem[Unit](primeFactorizationPool, "PrimeFactorization")
       </section>
       <section>
         <h3>How to use Group Routers?</h3>
-        <p>Given the same Routee as before, find the Router:</p>
-        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|3-6|4-5|8|10-12">
+        <p>Given the same Routee as before, find the Classic Router:</p>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|3-6|7|9">val system = ActorSystem("PrimeFactorization")
+
+val actors = (1 to 5).map { i =>
+  system.actorOf(PrimeFactorization.props(), s"routee$i")
+}.toList
+
+val paths = actors.map(_.path.toStringWithoutAddress)
+
+val group = system.actorOf(RoundRobinGroup(paths).props(), "PrimeFactorizationGroupRouter")
+
+toFactor.foreach { number =>
+  group ! PrimeFactor(number)
+}
         </code></pre>
+      </section>
+      <section>
+        <h3>How to use Group Routers?</h3>
+        <p>Given the same Routee as before, find the Typed Router:</p>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|2-3|4-7|9-10|19">val initiator = Behaviors.setup[Unit] { ctx =>
+  val routees = (1 to 5).map(i => 
+    ctx.spawn(PrimeFactorization(), s"Routee$i")).toList
+  routees.foreach { actorRef =>
+      ctx.system.receptionist
+        .tell(Receptionist.Register(serviceKey, actorRef))
+  }
+
+  val group = Routers.group(serviceKey)
+  val router = ctx.spawn(group, "prime-factor-pool")
+
+  toFactor.foreach { n =>
+    router.tell(PrimeFactorization.PrimeFactor(n))
+  }
+
+  Behaviors.empty
+}
+
+val system = ActorSystem[Unit](initiator, "PrimeFactorizationGroup")</code></pre>
       </section>
       <section>
         <h3>Thanks! And leave feedback!</h3>
