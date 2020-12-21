@@ -98,8 +98,112 @@
       </section>
       <section>
         <h3>How to use Pool Routers?</h3>
-        <p>Given this worker:</p>
-        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|7-8|30-42|17-28">import akka.actor.typed.scaladsl.Behaviors
+        <p>Given this worker in Akka Clasic:</p>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|34-46|37-44|19-29">import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.Props
+import scala.annotation.tailrec
+
+import PrimeFactorization._
+import io.github.jlprat.akka.lnl.routers.classic.PrimeFactorizationRouter.PrimeFactor
+
+object PrimeFactorization {
+
+  /**
+    * Gives the prime factors of the given number
+    * @param n remaining of the number to factorize
+    * @param primes stream of primes
+    * @param factors already calculated factors
+    * @return
+    */
+  @tailrec
+  def primeFactors(n: Long, factors: Seq[Long]): Seq[Long] = {
+    if (n == 1) factors.reverse
+    else {
+      // This loop is not a Range because Long rages exceed the maximum length
+      var i = 2L
+      while (!(n % i == 0)) {
+        i = i + 1
+      }
+      primeFactors(n / i, i +: factors)
+    }
+  }
+
+  def props(): Props = Props.create(classOf[PrimeFactorization])
+}
+
+class PrimeFactorization extends Actor with ActorLogging {
+
+  override def receive: Actor.Receive = {
+    case PrimeFactor(n) =>
+      val init = System.currentTimeMillis()
+      log.info(
+        "Primes for {} is {} ({}ms)",
+        n,
+        primeFactors(n, Seq.empty).mkString(", "),
+        System.currentTimeMillis() - init
+      )
+  }
+}</code></pre>
+      </section>
+      <section>
+        <h3>How to use Pool Routers?</h3>
+        <p>We create the following router in Akka Classic:</p>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|11-12|19-26|20-24|22|25|28-36|29|30-35">import akka.actor.Props
+import akka.actor.Actor
+import akka.routing.ActorRefRoutee
+import akka.routing.Router
+import akka.routing.RoundRobinRoutingLogic
+import io.github.jlprat.akka.lnl.routers.classic.PrimeFactorizationRouter.PrimeFactor
+import akka.actor.Terminated
+
+object PrimeFactorizationRouter {
+
+  trait Command
+  case class PrimeFactor(n: Long) extends Command
+
+  def props(): Props = Props.create(classOf[PrimeFactorizationRouter])
+}
+
+class PrimeFactorizationRouter extends Actor {
+
+  var router = {
+    val routees = Vector.fill(5) {
+      val r = context.actorOf(Props[PrimeFactorization]())
+      context.watch(r) // We want to restart the actor if it terminates
+      ActorRefRoutee(r)
+    }
+    Router(RoundRobinRoutingLogic(), routees)
+  }
+
+  override def receive: Actor.Receive = {
+    case msg: PrimeFactor => router.route(msg, sender())
+    case Terminated(a)    =>
+      // This will recreate a worker in case of unexpected termination
+      router = router.removeRoutee(a)
+      val r = context.actorOf(Props[PrimeFactorization]())
+      context.watch(r)
+      router = router.addRoutee(r)
+  }
+
+}</code></pre>
+      </section>
+      <section>
+        <h3>How to use Pool Routers?</h3>
+        <p>Go and run <a
+            href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/blob/master/src/main/scala/io.github.jlprat.akka.lnl/routers/classic/PrimeFactorizationMain.scala"><code>PrimeFactorizationMain</code></a>.
+        </p>
+      </section>
+      <section>
+        <h3>How to use Pool Routers?</h3>
+        <p>If you want the pool of workers constant in size, remember to watch the workers so you can restart them in
+          case of unexpected termination.</p>
+        </p>
+      </section>
+      <section>
+        <h3>How to use Pool Routers?</h3>
+        <p>Given this worker in Akka Typed:</p>
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|7-8|30-42">import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.Behavior
 import scala.annotation.tailrec
 
@@ -145,7 +249,7 @@ object PrimeFactorization {
       </section>
       <section>
         <h3>How to use Pool Routers?</h3>
-        <p>We create the following router:</p>
+        <p>We create the following router in Akka Typed:</p>
         <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|3-6|4-5|8|10-12">...
 val primeFactorizationPool = Behaviors.setup[Unit] { ctx =>
   val pool = Routers.pool(5) {
@@ -176,6 +280,7 @@ val system = ActorSystem[Unit](primeFactorizationPool, "PrimeFactorization")
         <p>Remember to supervise the Routee behavior if you want the pool size to be stable in size.</p>
         </p>
       </section>
+      
       <section>
         <h3>Thanks! And leave feedback!</h3>
         <a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"

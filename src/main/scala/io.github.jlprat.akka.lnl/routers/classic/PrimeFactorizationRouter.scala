@@ -33,7 +33,7 @@ class PrimeFactorizationRouter extends Actor {
       // This will recreate a worker in case of unexpected termination
       router = router.removeRoutee(a)
       val r = context.actorOf(Props[PrimeFactorization]())
-      context.watch(r)
+      context.watch(r) // We want to restart the actor if it terminates
       router = router.addRoutee(r)
   }
 
