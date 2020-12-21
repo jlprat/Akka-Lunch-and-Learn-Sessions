@@ -33,10 +33,12 @@ object PrimeFactorization {
     Behaviors.setup { context =>
       Behaviors.receiveMessage[Command] {
         case PrimeFactor(n) =>
+          val init = System.currentTimeMillis()
           context.log.info(
-            "Primes for {} is {}",
+            "Primes for {} is {} ({}ms)",
             n,
-            primeFactors(n, Seq.empty).mkString(", ")
+            primeFactors(n, Seq.empty).mkString(", "),
+            System.currentTimeMillis() - init
           )
           Behaviors.same
       }
