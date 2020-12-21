@@ -315,6 +315,11 @@ toFactor.foreach { number =>
 val system = ActorSystem[Unit](initiator, "PrimeFactorizationGroup")</code></pre>
       </section>
       <section>
+        <h3>How to use Group Routers?</h3>
+        <p>The Group Router will ask the <b>Receptionist</b> about all actors registered with the given key.</p>
+        <p>To avoid races, the router will stash any incoming message until the <b>Receptionist</b> replies.</p>
+      </section>
+      <section>
         <h3>Thanks! And leave feedback!</h3>
         <a href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/issues/new/choose" rel="noreferrer noopener"
           target="_blank">Write Feedback!</a>
