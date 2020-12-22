@@ -161,8 +161,14 @@ class PrimeFactorization extends Actor with ActorLogging {
         <h3>How to use Pool Routers?</h3>
         <p>In case of Routee another supervision strategy is needed, it can be configured
           in the <code>Pool</code> builder using <code>.withSupervisorStrategy</code> method.</p>
-        <pre><code></code></pre>
         </p>
+      </section>
+      <section>
+        <h3>How to use Pool Routers?</h3>
+        <p>In Akka classic, one can define dynamically sized pools:</p>
+        <pre><code class="scala" data-trim style="font-size: 18px;">val resizer = DefaultResizer(lowerBound = 2, upperBound = 15)
+val router: ActorRef =
+context.actorOf(RoundRobinPool(5, Some(resizer)).props(Props[Worker]()), "router")</code></pre>
       </section>
       <section>
         <h3>How to use Pool Routers?</h3>
