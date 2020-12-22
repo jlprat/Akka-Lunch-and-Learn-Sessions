@@ -41,10 +41,11 @@ class PrimeFactorization extends Actor with ActorLogging {
     case PrimeFactor(n) =>
       val init = System.currentTimeMillis()
       log.info(
-        "Primes for {} is {} ({}ms)",
+        "Primes for {} is {} ({}ms) (processed by {})",
         n,
         primeFactors(n, Seq.empty).mkString(", "),
-        System.currentTimeMillis() - init
+        System.currentTimeMillis() - init,
+        self.path.toStringWithoutAddress
       )
   }
 }
