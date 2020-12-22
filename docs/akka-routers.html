@@ -220,23 +220,17 @@ object PrimeFactorization {
       <section>
         <h3>How to use Pool Routers?</h3>
         <p>We create the following router in Akka Typed:</p>
-        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|3-6|4-5|8|10-12">...
-val primeFactorizationPool = Behaviors.setup[Unit] { ctx =>
-  val pool = Routers.pool(5) {
-    Behaviors.supervise(PrimeFactorization())
-      .onFailure(SupervisorStrategy.restart)
-  }
-
-  val router = ctx.spawn(pool, "prime-factor-pool")
-
-  toFactor.foreach { n =>
-    router.tell(PrimeFactorization.PrimeFactor(n))
-  }
-
-  Behaviors.empty
+        <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|2-5|3-4|7|9-11">...
+val pool = Routers.pool(4) {
+  Behaviors.supervise(PrimeFactorization())
+    .onFailure(SupervisorStrategy.restart)
 }
 
-val system = ActorSystem[Unit](primeFactorizationPool, "PrimeFactorization")
+val router = ActorSystem[PrimeFactorization.Command](pool, "PrimeFactorization")
+
+toFactor.foreach { n =>
+  router.tell(PrimeFactorization.PrimeFactor(n))
+}
 ...</code></pre>
       </section>
       <section>
@@ -490,6 +484,17 @@ val system = ActorSystem[Unit](initiator, "PrimeFactorizationGroup")</code></pre
           </tr>
           <tr>
             <th>Use case</th>
+            <td>Some times a worker might get overloaded with work, if after some time there is no answer,
+              the message is passed to backup workers, hoping they won't be under heavy load.
+            </td>
+          </tr>
+        </table>
+      </section>
+      <section>
+        <h3>Tail Chopping</h3>
+        <table>
+          <tr>
+            <th>Alternative Use case</th>
             <td>We want fast response time for a problem with different possible algorithms
               which have a low best case (<code>&Omega;</code>) but a high worst case (<code>O</code>)
               Time is important but also of resources.
