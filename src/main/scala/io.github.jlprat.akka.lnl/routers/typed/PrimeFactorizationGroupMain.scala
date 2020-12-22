@@ -8,6 +8,10 @@ import akka.actor.typed.receptionist.Receptionist
 
 import scala.concurrent.duration._
 
+/**
+  * This uses Random strategy.
+  * There is no way we can predict how work will be split among routees.
+  */
 object PrimeFactorizationGroupMain {
 
   def main(args: Array[String]): Unit = {
