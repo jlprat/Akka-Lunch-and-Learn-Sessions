@@ -14,14 +14,14 @@ object PrimeFactorizationGroupMain {
 
     val serviceKey = ServiceKey[PrimeFactorization.Command]("prime-factorization-worker")
 
-    val toFactor = Seq(4934578352334L, 196330801L, 4934578352334L, 196330801L, 4934578352334L,
-      196330801L, 4934578352334L, 196330801L, 4934578352334L, 196330801L, 4934578352334L,
-      196330801L, 4934578352334L, 196330801L)
+    val toFactor = Seq(4934578352334L, 196330801L, 217997299L, 231282467L, 4934578352334L,
+      196330801L, 217997299L, 231282467L, 4934578352334L, 196330801L, 217997299L, 231282467L,
+      4934578352334L, 196330801L, 217997299L, 231282467L)
 
     val initiator = Behaviors.setup[Unit] { ctx =>
-      val routees = (1 to 5).map(i => ctx.spawn(PrimeFactorization(), s"Routee$i")).toList
+      val routees = (1 to 4).map(i => ctx.spawn(PrimeFactorization(), s"Routee$i")).toList
       routees.foreach { actorRef =>
-          ctx.system.receptionist.tell(Receptionist.Register(serviceKey, actorRef))
+        ctx.system.receptionist.tell(Receptionist.Register(serviceKey, actorRef))
       }
 
       val group = Routers.group(serviceKey)

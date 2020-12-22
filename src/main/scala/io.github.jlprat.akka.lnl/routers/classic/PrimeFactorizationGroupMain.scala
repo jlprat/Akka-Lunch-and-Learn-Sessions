@@ -10,13 +10,13 @@ import akka.routing.RoundRobinGroup
 object PrimeFactorizationGroupMain {
 
   def main(args: Array[String]): Unit = {
-    val toFactor = Seq(4934578352334L, 196330801L, 4934578352334L, 196330801L, 4934578352334L,
-      196330801L, 4934578352334L, 196330801L, 4934578352334L, 196330801L, 4934578352334L,
-      196330801L, 4934578352334L, 196330801L)
+    val toFactor = Seq(4934578352334L, 196330801L, 217997299L, 231282467L, 4934578352334L,
+      196330801L, 217997299L, 231282467L, 4934578352334L, 196330801L, 217997299L,
+      231282467L, 4934578352334L, 196330801L, 217997299L, 231282467L)
 
     val system = ActorSystem("PrimeFactorization")
 
-    val actors = (1 to 5).map { i =>
+    val actors = (1 to 4).map { i =>
       system.actorOf(PrimeFactorization.props(), s"routee$i")
     }.toList
 

@@ -10,13 +10,13 @@ import io.github.jlprat.akka.lnl.routers.classic.PrimeFactorization.PrimeFactor
 object PrimeFactorizationMain {
 
   def main(args: Array[String]): Unit = {
-    val toFactor = Seq(4934578352334L, 196330801L, 4934578352334L, 196330801L, 4934578352334L,
-      196330801L, 4934578352334L, 196330801L, 4934578352334L, 196330801L, 4934578352334L,
-      196330801L, 4934578352334L, 196330801L)
+    val toFactor = Seq(4934578352334L, 196330801L, 217997299L, 231282467L, 4934578352334L,
+      196330801L, 217997299L, 231282467L, 4934578352334L, 196330801L, 217997299L,
+      231282467L, 4934578352334L, 196330801L, 217997299L, 231282467L)
 
     val system = ActorSystem("PrimeFactorization")
 
-    val router = system.actorOf(RoundRobinPool(5).props(PrimeFactorization.props()), "PrimeFactorizationRouter")
+    val router = system.actorOf(RoundRobinPool(4).props(PrimeFactorization.props()), "PrimeFactorizationRouter")
 
     toFactor.foreach { number =>
       router ! PrimeFactor(number)

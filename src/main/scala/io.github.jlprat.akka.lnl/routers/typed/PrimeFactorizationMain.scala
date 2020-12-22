@@ -11,12 +11,12 @@ object PrimeFactorizationMain {
 
   def main(args: Array[String]): Unit = {
 
-    val toFactor = Seq(4934578352334L, 196330801L, 4934578352334L, 196330801L, 4934578352334L,
-      196330801L, 4934578352334L, 196330801L, 4934578352334L, 196330801L, 4934578352334L,
-      196330801L, 4934578352334L, 196330801L)
+    val toFactor = Seq(4934578352334L, 196330801L, 217997299L, 231282467L, 4934578352334L,
+      196330801L, 217997299L, 231282467L, 4934578352334L, 196330801L, 217997299L, 231282467L,
+      4934578352334L, 196330801L, 217997299L, 231282467L)
 
     val primeFactorizationPool = Behaviors.setup[Unit] { ctx =>
-      val pool = Routers.pool(5) {
+      val pool = Routers.pool(4) {
         Behaviors.supervise(PrimeFactorization()).onFailure(SupervisorStrategy.restart)
       }
 
