@@ -49,7 +49,6 @@
           <li>When to use Pool?</li>
           <li>When to use Group?</li>
           <li>What are the use cases for each Routing Strategy?</li>
-          <li>How to broadcast a message?</li>
         </ul>
       </section>
       <section>
@@ -318,6 +317,187 @@ val system = ActorSystem[Unit](initiator, "PrimeFactorizationGroup")</code></pre
         <h3>How to use Group Routers?</h3>
         <p>The Group Router will ask the <b>Receptionist</b> about all actors registered with the given key.</p>
         <p>To avoid races, the router will stash any incoming message until the <b>Receptionist</b> replies.</p>
+      </section>
+      <section>
+        <h3>What are the use cases for each Routing Strategy?</h3>
+        <p>Akka comes with these different routing strategies:</p>
+        <ul>
+          <li>Round Robin</li>
+          <li>Random</li>
+          <li>Consistent Hashing</li>
+          <li>Balancing</li>
+          <li>Smallest Inbox</li>
+          <li>Broadcast</li>
+          <li>Scatter Gather First Completed</li>
+          <li>Tail Chopping</li>
+        </ul>
+      </section>
+      <section>
+        <h3>Round Robin Strategy</h3>
+        <table>
+          <tr>
+            <th>Presence</th>
+            <td>Akka Classic and Akka Typed (default for Pool)</td>
+          </tr>
+          <tr>
+            <th>How it works</th>
+            <td>Router sends a message to each routee, always following the same order.</td>
+          </tr>
+          <tr>
+            <th>Use case</th>
+            <td>Work load for all messages is equivalent. Messages don't need to be processed by any specific routee.
+            </td>
+          </tr>
+        </table>
+      </section>
+      <section>
+        <h3>Random</h3>
+        <table>
+          <tr>
+            <th>Presence</th>
+            <td>Akka Classic and Akka Typed (default for Group)</td>
+          </tr>
+          <tr>
+            <th>How it works</th>
+            <td>Router sends a message to any routee.</td>
+          </tr>
+          <tr>
+            <th>Use case</th>
+            <td>Worker size is dynamic. Messages don't need to be processed by any specific routee.</td>
+          </tr>
+        </table>
+      </section>
+      <section>
+        <h3>Consistent Hashing</h3>
+        <table>
+          <tr>
+            <th>Presence</th>
+            <td>Akka Classic and Akka Typed</td>
+          </tr>
+          <tr>
+            <th>How it works</th>
+            <td>Given a way to calculate a hash for incoming messages, the Router will use it to select a Routee.
+              Selection is consistent,as long as number of Routees stay the same.
+            </td>
+          </tr>
+          <tr>
+            <th>Use case</th>
+            <td>Distribution of work is needed. Each Routee holds only a part of the complete Application State.</td>
+          </tr>
+        </table>
+      </section>
+      <section>
+        <h3>Balancing</h3>
+        <table>
+          <tr>
+            <th>Presence</th>
+            <td>Akka Classic (only for Pool)</td>
+          </tr>
+          <tr>
+            <th>How it works</th>
+            <td>All Routees will share the same mailbox.
+              Given enough messages in the mailbox, all Routees will share an equal work load.
+            </td>
+          </tr>
+          <tr>
+            <th>Use case</th>
+            <td>Constant utilization of Routees is desired. Messages don't need to be processed by any specific routee.
+              Routees can't be sent messages directly.
+            </td>
+          </tr>
+        </table>
+      </section>
+      <section>
+        <h3>Smallest Inbox</h3>
+        <table>
+          <tr>
+            <th>Presence</th>
+            <td>Akka Classic (only for Pool)</td>
+          </tr>
+          <tr>
+            <th>How it works</th>
+            <td>Router picks the Routee according to its idle state and size of their mailbox.
+              Remote Actors have the lowest priority since mailbox size is unknown.
+            </td>
+          </tr>
+          <tr>
+            <th>Use case</th>
+            <td>Constant utilization of Routees is desired. Messages don't need to be processed by any specific routee.
+              Routees can be sent messages directly.
+            </td>
+          </tr>
+        </table>
+      </section>
+      <section>
+        <h3>Broadcast</h3>
+        <table>
+          <tr>
+            <th>Presence</th>
+            <td>Akka Classic</td>
+          </tr>
+          <tr>
+            <th>How it works</th>
+            <td>Each message is sent to all the Routees.
+            </td>
+          </tr>
+          <tr>
+            <th>Use case</th>
+            <td>Any given message must be processed by all Routees, i.e. each Routee must
+              have a copy of the full application State.
+            </td>
+          </tr>
+        </table>
+      </section>
+      <section>
+        <h3>Scatter Gather First Completed</h3>
+        <table>
+          <tr>
+            <th>Presence</th>
+            <td>Akka Classic</td>
+          </tr>
+          <tr>
+            <th>How it works</th>
+            <td>Each message is sent to all the Routees, then waits for replies.
+              Only first reply is sent ot he original sender, the others are discarded.
+            </td>
+          </tr>
+          <tr>
+            <th>Use case</th>
+            <td>A problem might be solved using different algorithms/strategies and we want the fastest
+              response time possible. Time is crucial at expense of resources.
+            </td>
+          </tr>
+        </table>
+      </section>
+      <section>
+        <h3>Tail Chopping</h3>
+        <table>
+          <tr>
+            <th>Presence</th>
+            <td>Akka Classic</td>
+          </tr>
+          <tr>
+            <th>How it works</th>
+            <td>Message is sent to a random Routee, after some delay to a second, and so on.
+              Only first reply is sent ot he original sender, the others are discarded.
+            </td>
+          </tr>
+          <tr>
+            <th>Use case</th>
+            <td>We want fast response time for a problem with different possible algorithms
+              which have a low best case (<code>&Omega;</code>) but a high worst case (<code>O</code>)
+              Time is important but also of resources.
+            </td>
+          </tr>
+        </table>
+      </section>
+      <section>
+        <h3></h3>
+        <p>Some examples can be found here for <a
+            href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/tree/master/src/main/scala/io.github.jlprat.akka.lnl/routers/examples/classic">classic</a>
+          and <a
+            href="https://github.com/jlprat/Akka-Lunch-and-Learn-Sessions/tree/master/src/main/scala/io.github.jlprat.akka.lnl/routers/examples/typed">typed</a>.
+        </p>
       </section>
       <section>
         <h3>Thanks! And leave feedback!</h3>
