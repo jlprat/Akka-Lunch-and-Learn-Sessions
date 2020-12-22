@@ -1,13 +1,12 @@
 package io.github.jlprat.akka.lnl.routers.examples.classic
 
 import akka.actor.ActorSystem
-import akka.routing.BalancingPool
+import akka.routing.RandomPool
 import io.github.jlprat.akka.lnl.routers.classic.PrimeFactorization
 import io.github.jlprat.akka.lnl.routers.classic.PrimeFactorization.PrimeFactor
 
 import scala.concurrent.duration._
 import scala.concurrent.Await
-import akka.routing.RandomPool
 
 /**
   * This uses Random strategy.
