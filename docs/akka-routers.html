@@ -449,6 +449,27 @@ val system = ActorSystem[Unit](initiator, "PrimeFactorizationGroup")</code></pre
         </table>
       </section>
       <section>
+        <h3>Tail Chopping</h3>
+        <table>
+          <tr>
+            <th>Presence</th>
+            <td>Akka Classic</td>
+          </tr>
+          <tr>
+            <th>How it works</th>
+            <td>Message is sent to a random Routee, after some delay to a second, and so on.
+              Only first reply is sent ot he original sender, the others are discarded.
+            </td>
+          </tr>
+          <tr>
+            <th>Use case</th>
+            <td>On a distributed environment, we run the same query on multiple nodes in an
+              attempt to lower Latency. Time is crucial but keeping an eye on resources.
+            </td>
+          </tr>
+        </table>
+      </section>
+      <section>
         <h3>Scatter Gather First Completed</h3>
         <table>
           <tr>
@@ -465,39 +486,6 @@ val system = ActorSystem[Unit](initiator, "PrimeFactorizationGroup")</code></pre
             <th>Use case</th>
             <td>A problem might be solved using different algorithms/strategies and we want the fastest
               response time possible. Time is crucial at expense of resources.
-            </td>
-          </tr>
-        </table>
-      </section>
-      <section>
-        <h3>Tail Chopping</h3>
-        <table>
-          <tr>
-            <th>Presence</th>
-            <td>Akka Classic</td>
-          </tr>
-          <tr>
-            <th>How it works</th>
-            <td>Message is sent to a random Routee, after some delay to a second, and so on.
-              Only first reply is sent ot he original sender, the others are discarded.
-            </td>
-          </tr>
-          <tr>
-            <th>Use case</th>
-            <td>Some times a worker might get overloaded with work, if after some time there is no answer,
-              the message is passed to backup workers, hoping they won't be under heavy load.
-            </td>
-          </tr>
-        </table>
-      </section>
-      <section>
-        <h3>Tail Chopping</h3>
-        <table>
-          <tr>
-            <th>Alternative Use case</th>
-            <td>We want fast response time for a problem with different possible algorithms
-              which have a low best case (<code>&Omega;</code>) but a high worst case (<code>O</code>)
-              Time is important but also of resources.
             </td>
           </tr>
         </table>
