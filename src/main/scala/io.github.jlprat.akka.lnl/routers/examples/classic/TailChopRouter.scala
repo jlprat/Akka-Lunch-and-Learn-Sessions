@@ -9,10 +9,10 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.event.LoggingAdapter
 import akka.pattern.ask
+import akka.routing.FromConfig
 import akka.util.Timeout
 
 import TailChopRouter.Worker.GetRelatedArtist
-import akka.routing.FromConfig
 
 /**
   * This uses TailChop strategy.
