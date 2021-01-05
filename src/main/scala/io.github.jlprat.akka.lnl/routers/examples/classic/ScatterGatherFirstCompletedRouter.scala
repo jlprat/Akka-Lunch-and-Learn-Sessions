@@ -80,7 +80,7 @@ object ScatterGatherFirstCompletedRouter {
       // "I hit some latency trying to find a similar for" in the logs,
       // it means Tail Chopping saved a long latency!
       println(
-        s"If you liked $artist, you might like $other ($endTime)"
+        s"If you liked $artist, you might like $other ($endTime ms)"
       )
     }
 

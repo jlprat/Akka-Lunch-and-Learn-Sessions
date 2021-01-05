@@ -29,7 +29,7 @@ import TailChopRouter.Worker.GetRelatedArtist
   * will be fired. Otherwise, an additional query will be fired in hopes it doesn't also hit a
   * busy node. In this particular case, if this additional query is also not replying within
   * their normal range, it also fires another redundant query.
-  * 
+  *
   * To see where this strategy shines, look for log lines where the response time is < 400ms
   * some of those, might have an extra log line stating they hit some latency.
   */
@@ -87,7 +87,7 @@ object TailChopRouter {
       // "I hit some latency trying to find a similar for" in the logs,
       // it means Tail Chopping saved a long latency!
       println(
-        s"If you liked $artist, you might like $other ($endTime)"
+        s"If you liked $artist, you might like $other ($endTime ms)"
       )
     }
 
