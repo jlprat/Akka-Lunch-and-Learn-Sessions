@@ -11,7 +11,7 @@ import akka.event.LoggingAdapter
 import akka.pattern.ask
 import akka.util.Timeout
 
-import TailChopExample.Worker.GetRelatedArtist
+import TailChopRouter.Worker.GetRelatedArtist
 import akka.routing.FromConfig
 
 /**
@@ -33,7 +33,7 @@ import akka.routing.FromConfig
   * To see where this strategy shines, look for log lines where the response time is < 400ms
   * some of those, might have an extra log line stating they hit some latency.
   */
-object TailChopExample {
+object TailChopRouter {
 
   object Worker {
     trait Command
