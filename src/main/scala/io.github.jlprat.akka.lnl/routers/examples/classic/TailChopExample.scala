@@ -14,6 +14,25 @@ import akka.util.Timeout
 import TailChopExample.Worker.GetRelatedArtist
 import akka.routing.FromConfig
 
+/**
+  * This uses TailChop strategy.
+  * This service finds related artists for the given one.
+  * For simplicity reasons, the related artist is just a String reversal.
+  * The work done to find those related artists might be a DB query, on a cluster system.
+  * Let's assume each query fired on this DB will, with high probability, land on a different
+  * node of the cluster.
+  * Some times, a query is cogged with latency, as the node queried is busy, in here simulated
+  * by a random check and a `Thread.sleep`.
+  * TailChop strategy attempts, at resources cost, to lower the latency by firing redundant
+  * queries after a given delay time.
+  * If the DB replies within their normal time range (10ms in this case) no further queries
+  * will be fired. Otherwise, an additional query will be fired in hopes it doesn't also hit a
+  * busy node. In this particular case, if this additional query is also not replying within
+  * their normal range, it also fires another redundant query.
+  * 
+  * To see where this strategy shines, look for log lines where the response time is < 400ms
+  * some of those, might have an extra log line stating they hit some latency.
+  */
 object TailChopExample {
 
   object Worker {

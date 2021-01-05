@@ -14,6 +14,8 @@ import scala.concurrent.Await
   * and they are 2 complex and 2 simple numbers.
   * It will distribute the number of messages evenly among all routees
   * but as they bigly differ in processing time, some might idle for a long time
+  * In this case, despite all actors processed the same amount of messages, some were idling
+  * for a longer time than the others.
   */
 object SmallestMailboxRouter {
 

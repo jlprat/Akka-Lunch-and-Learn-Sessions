@@ -12,7 +12,8 @@ import scala.concurrent.Await
   * This uses Balancing strategy.
   * Number to factor are coming in groups of 4 (same as routees),
   * and they are 2 complex and 2 simple numbers.
-  * This means, with Balancing strategy, work is evenly distributed, and all routees work
+  * This means, with Balancing strategy (all routees share the same mailbox),
+  * work is evenly distributed, and all routees will be working at a given time
   * as long as there are number to factorize.
   */
 object BalancingRouter {
