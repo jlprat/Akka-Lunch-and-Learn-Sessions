@@ -43,7 +43,7 @@ object TailChopRouter {
   }
 
   class Worker extends Actor with ActorLogging {
-    
+
     /**
       * Let's pretend this does something
       */
@@ -68,7 +68,6 @@ object TailChopRouter {
   }
 
   def main(args: Array[String]): Unit = {
-    Thread.sleep(4.seconds.toMillis)
     implicit val system  = ActorSystem("TailChopping")
     implicit val timeout = Timeout(1.second)
 
