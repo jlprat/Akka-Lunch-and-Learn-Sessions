@@ -43,9 +43,7 @@ object TailChopRouter {
   }
 
   class Worker extends Actor with ActorLogging {
-
-    println(self.path.toStringWithoutAddress)
-
+    
     /**
       * Let's pretend this does something
       */
