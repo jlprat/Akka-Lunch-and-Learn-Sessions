@@ -68,7 +68,7 @@ object ScatterGatherFirstCompletedRouter {
     implicit val timeout = Timeout(1.second)
 
     //Reads type of router and config from "application.conf"
-    val router = system.actorOf(FromConfig.props(Props[Worker]()), "scatterGatherRouter")
+    val router = system.actorOf(FromConfig.props(Worker.props()), "scatterGatherRouter")
 
     val artists = Seq("The Who", "Queen", "Metallica", "Green Day", "Bad Religion")
 

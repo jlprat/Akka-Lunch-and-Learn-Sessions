@@ -72,7 +72,7 @@ object TailChopRouter {
     implicit val timeout = Timeout(1.second)
 
     //Reads type of router and config from "application.conf"
-    val router = system.actorOf(FromConfig.props(Props[Worker]()), "tailChopRouter")
+    val router = system.actorOf(FromConfig.props(Worker.props()), "tailChopRouter")
 
     val artists = Seq("The Who", "Queen", "Metallica", "Green Day", "Bad Religion")
 
