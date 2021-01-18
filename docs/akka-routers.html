@@ -236,6 +236,12 @@ toFactor.foreach { n =>
         </p>
       </section>
       <section>
+        <h3>How to use Pool Routers?</h3>
+        <p>Since Akka <code>2.6.11</code> one can configure which messages in a pool should be broadcasted
+          to all Routees.</p>
+        <p>Use <code>pool.withBroadcastPredicate</code> for this.</p>
+      </section>
+      <section>
         <h3>Detour: Actor Path</h3>
         <p>An Actor Path is the hierarchical path of actor names starting at the "User Guardian" actor.</p>
       </section>
