@@ -65,7 +65,7 @@ object ConsistentHashingRouter {
     // This could take a [[ConsistentHashMapping]] function to determine the key of messages.
     // [[ConsistentHashMapping]] can be used when we don't have access to the messages
     val router = system.actorOf(
-      ConsistentHashingPool(10, virtualNodesFactor = 5).props(Props[KeyValueStore]()),
+      ConsistentHashingPool(10, virtualNodesFactor = 5).props(KeyValueStore.props()),
       name = "keyValueStore"
     )
 
