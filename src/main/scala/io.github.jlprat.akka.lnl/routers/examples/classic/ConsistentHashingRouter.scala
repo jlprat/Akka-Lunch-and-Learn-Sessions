@@ -59,7 +59,7 @@ object ConsistentHashingRouter {
   }
 
   def main(args: Array[String]): Unit = {
-    implicit val system  = ActorSystem("TailChopping")
+    implicit val system  = ActorSystem("ConsistentHashing")
     implicit val timeout = Timeout(1.second)
 
     // This could take a [[ConsistentHashMapping]] function to determine the key of messages.
