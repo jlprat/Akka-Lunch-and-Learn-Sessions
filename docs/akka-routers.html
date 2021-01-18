@@ -87,15 +87,6 @@
         </p>
       </section>
       <section>
-        <h3>When to use Pool?</h3>
-        <p>Use it if you prefer:</p>
-        <ul>
-          <li>Managed membership on the Router.</li>
-          <li>Control over the Routees lifecycle.</li>
-          <li>Local actors spawned.</li>
-        </ul>
-      </section>
-      <section>
         <h3>How to use Pool Routers?</h3>
         <p>Given this worker in Akka Clasic:</p>
         <pre><code class="scala" data-trim style="font-size: 18px;" data-line-numbers="|34-46|37-44|19-29">import akka.actor.Actor
@@ -254,21 +245,20 @@ toFactor.foreach { n =>
       </section>
       <section>
         <h3>Detour: Actor Path</h3>
-        <p>In Akka Classic, an actor can be retrieved by the given <code>Actor Path</code>.</p>
+        <p>In Akka Classic, an actor can be retrieved by the given <code>ActorPath</code>.</p>
         <p>In Akka Typed, one must should use the newly introduced <code>Receptionist</code>.</p>
       </section>
       <section>
         <h3>When to use Group?</h3>
         <p>Group Routers are best used when the workers might be created in different places.</p>
-        <p>Even, in different <code>ActorSystems</code>.</p>
+        <p>Even, in different <code>ActorSystem</code>s.</p>
       </section>
       <section>
-        <h3>When to use Pool?</h3>
+        <h3>When to use Group?</h3>
         <p>Use it if you prefer:</p>
         <ul>
-          <li>Manual membership on the Router.</li>
+          <li>Manual membership on the Router (only in Akka Classic).</li>
           <li>Delegate lifecycle of Routees elsewhere.</li>
-          <li>Routees not as children of the Router.</li>
           <li>Cluster friendly.</li>
         </ul>
       </section>
