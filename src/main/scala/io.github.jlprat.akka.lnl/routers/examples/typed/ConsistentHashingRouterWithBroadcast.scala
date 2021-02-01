@@ -70,6 +70,8 @@ object ConsistentHashingRouterWithBroadcast {
       case Put(key, _) => key
       case Get(key, _) => key
       case Remove(key) => key
+      case HardReset =>
+        throw new IllegalAccessException("HardReset should not be consistently hashed")
     }
 
     val consistentHashingPool = Routers
