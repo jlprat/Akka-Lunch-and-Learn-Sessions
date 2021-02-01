@@ -4,7 +4,7 @@ version := "1.0"
 
 scalaVersion := "2.13.4"
 
-lazy val akkaVersion = "2.6.11"
+lazy val akkaVersion = "2.6.12"
 
 scalacOptions ++= Seq(
   "-deprecation", // Emit warning and location for usages of deprecated APIs.
